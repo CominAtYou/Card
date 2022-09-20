@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Card</string>
+    <string name="fragment_timeline_title">Timeline</string>
+    <string name="fragment_explore_search_box_label">Search</string>
+    <string name="activity_search_search_box_label">Search</string>
+    <string name="activity_search_go_to_user">Go to @%1$s</string>
+    <string name="bottom_nav_timeline_label">Timeline</string>
+    <string name="bottom_nav_explore_label">Explore</string>
+    <string name="bottom_nav_mentions_label">Mentions</string>
+    <string name="fragment_mentions_title">Mentions</string>
+    <string name="fragment_auth_pending_title">Nearly there!</string>
+    <string name="fragment_auth_pending_description">We gotta set up some things with Twitter first. You\'ll be ready in no time.</string>
+    <string name="fragment_auth_failed_title">Something went wrong</string>
+    <string name="fragment_auth_failed_description">We weren\'t able authenticate with Twitter. Try giving it another shot.</string>
+    <string name="fragment_auth_failed_retry_button_text">Try again</string>
+    <string name="fragment_auth_failed_error_details_label">Details</string>
+    <string name="activity_profile_followers_label">Followers</string>
+    <string name="activity_profile_following_label">Following</string>
+</resources>

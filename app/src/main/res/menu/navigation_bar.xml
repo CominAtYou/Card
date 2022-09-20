@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/timeline"
+        android:enabled="true"
+        android:icon="@drawable/ic_home_filled_24"
+        android:title="@string/bottom_nav_timeline_label"/>
+    <item
+        android:id="@+id/explore"
+        android:enabled="true"
+        android:icon="@drawable/ic_search_24"
+        android:title="@string/bottom_nav_explore_label"/>
+    <item
+        android:id="@+id/mentions"
+        android:enabled="true"
+        android:icon="@drawable/ic_activity_24"
+        android:title="@string/bottom_nav_mentions_label"/>
+
+
+</menu>

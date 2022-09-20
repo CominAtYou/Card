@@ -1,0 +1,111 @@
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="12dp"
+    android:clickable="true"
+    style="?attr/materialCardViewFilledStyle"
+    app:contentPaddingLeft="16dp"
+    app:contentPaddingRight="16dp"
+    app:contentPaddingTop="16dp"
+    app:contentPaddingBottom="12dp"
+    android:id="@+id/text_only_tweet">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/text_only_tweet_profile_picture"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_account_circle_placeholder_24"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CircularCrop" />
+
+        <TextView
+            android:id="@+id/text_only_author_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/ps_regular"
+            tools:text="User"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/text_only_tweet_profile_picture"
+            app:layout_constraintTop_toTopOf="@+id/text_only_tweet_profile_picture" />
+
+        <TextView
+            android:textSize="14sp"
+            android:id="@+id/text_only_username_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/gs_text_regular"
+            tools:text="\@Username • 14h"
+            app:layout_constraintStart_toStartOf="@id/text_only_author_name"
+            app:layout_constraintTop_toBottomOf="@id/text_only_author_name" />
+
+        <TextView
+            android:id="@+id/tweet_text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/ps_regular"
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed rhoncus, metus sit amet mattis pretium, felis nibh pulvinar mi, sed fringilla ante nulla nec erat."
+            android:textSize="17sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_only_username_timestamp" />
+
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_marginTop="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_only_chip_group"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tweet_text_content">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/text_only_tweet_reply_chip"
+                    style="@style/Widget.App.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:chipIcon="@drawable/ic_comment_24"
+                    app:chipIconTint="?android:textColorPrimary"
+                    app:chipBackgroundColor="?attr/colorSurfaceVariant"
+                    tools:text="6.2K"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/text_only_tweet_retweet_chip"
+                    style="@style/Widget.App.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:chipIcon="@drawable/ic_rotation_24"
+                    app:chipIconTint="?android:textColorPrimary"
+                    app:chipBackgroundColor="?attr/colorSurfaceVariant"
+                    tools:text="17.8K"/>
+
+                <!-- Twitter API v2 does not have a mechanism for determining whether or not a Tweet has been liked.
+                     I really don't want to struggle with OAuth 1.0a anymore, (I spent FOREVER trying to implement it)
+                     so the like button is just gonna have to no-op for now -->
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/text_only_tweet_like_chip"
+                    style="@style/Widget.App.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:chipIcon="@drawable/ic_like"
+                    app:chipIconTint="?android:textColorPrimary"
+                    app:chipBackgroundColor="?attr/colorSurfaceVariant"
+                    tools:text="262K"/>
+
+
+            </com.google.android.material.chip.ChipGroup>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

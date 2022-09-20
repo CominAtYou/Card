@@ -1,0 +1,14 @@
+<resources>
+    <!-- Search bar -->
+    <dimen name="search_bar_margin">16dp</dimen>
+    <dimen name="search_bar_height">52dp</dimen>
+    <dimen name="search_bar_text_size">20sp</dimen>
+    <dimen name="search_bar_corner_radius">28dp</dimen>
+    <dimen name="search_bar_content_inset">56dp</dimen>
+    <dimen name="search_bar_padding_start">4dp</dimen>
+    <dimen name="search_bar_padding_start_two_pane">8dp</dimen>
+    <dimen name="search_bar_padding_end">16dp</dimen>
+    <dimen name="search_bar_padding_end_two_pane">24dp</dimen>
+    <dimen name="search_bar_title_padding_start">-4dp</dimen>
+    <dimen name="search_bar_title_padding_start_regular_two_pane">8dp</dimen>
+</resources>

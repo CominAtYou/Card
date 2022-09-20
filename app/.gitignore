@@ -1,0 +1,4 @@
+/build
+/release
+/src/test/java/com/cominatyou/card/ExampleUnitTest.java
+/src/androidTest/java/com/cominatyou/card/ExampleInstrumentedTest.java
