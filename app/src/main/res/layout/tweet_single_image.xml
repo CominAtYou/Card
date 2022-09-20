@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="10dp"
     android:clickable="true"
     style="?attr/materialCardViewFilledStyle"
     app:contentPaddingLeft="16dp"
@@ -28,7 +29,6 @@
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CircularCrop" />
 
         <LinearLayout
-
             android:id="@+id/media_tweet_author_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
