@@ -29,26 +29,39 @@
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CircularCrop" />
 
-        <TextView
-            android:id="@+id/text_only_author_name"
+        <LinearLayout
+
+            android:id="@+id/text_only_tweet_author_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:fontFamily="@font/ps_regular"
-            tools:text="User"
-            android:textSize="14sp"
+            android:orientation="vertical"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/text_only_tweet_profile_picture"
-            app:layout_constraintTop_toTopOf="@+id/text_only_tweet_profile_picture" />
+            app:layout_constraintTop_toTopOf="@+id/text_only_tweet_profile_picture">
 
-        <TextView
-            android:textSize="14sp"
-            android:id="@+id/text_only_username_timestamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/gs_text_regular"
-            tools:text="\@Username • 14h"
-            app:layout_constraintStart_toStartOf="@id/text_only_author_name"
-            app:layout_constraintTop_toBottomOf="@id/text_only_author_name" />
+            <TextView
+                android:id="@+id/text_only_author_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/ps_regular"
+                android:maxLines="1"
+                android:textSize="14sp"
+                tools:text="User" />
+
+            <TextView
+                android:id="@+id/text_only_username_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/gs_text_regular"
+                android:textSize="14sp"
+                tools:text="\@Username • 14h" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tweet_text_content"
@@ -59,7 +72,7 @@
             tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed rhoncus, metus sit amet mattis pretium, felis nibh pulvinar mi, sed fringilla ante nulla nec erat."
             android:textSize="17sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_only_username_timestamp" />
+            app:layout_constraintTop_toBottomOf="@+id/text_only_tweet_author_details" />
 
 
             <com.google.android.material.chip.ChipGroup

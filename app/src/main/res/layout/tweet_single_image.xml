@@ -27,26 +27,39 @@
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CircularCrop" />
 
-        <TextView
-            android:id="@+id/author_name"
+        <LinearLayout
+
+            android:id="@+id/media_tweet_author_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:fontFamily="@font/ps_regular"
-            tools:text="User"
-            android:textSize="14sp"
+            android:orientation="vertical"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/profile_picture"
-            app:layout_constraintTop_toTopOf="@+id/profile_picture" />
+            app:layout_constraintTop_toTopOf="@id/profile_picture">
 
-        <TextView
-            android:textSize="14sp"
-            android:id="@+id/username_timestamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/gs_text_regular"
-            tools:text="\@username • 14h"
-            app:layout_constraintStart_toStartOf="@id/author_name"
-            app:layout_constraintTop_toBottomOf="@id/author_name" />
+            <TextView
+                android:id="@+id/media_tweet_author_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/ps_regular"
+                android:maxLines="1"
+                android:textSize="14sp"
+                tools:text="User" />
+
+            <TextView
+                android:id="@+id/media_tweet_username_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/gs_text_regular"
+                android:textSize="14sp"
+                tools:text="\@Username • 14h" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/media_tweet_text_content"
@@ -57,7 +70,7 @@
             tools:text="Sample tweet with image."
             android:textSize="17sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/username_timestamp" />
+            app:layout_constraintTop_toBottomOf="@+id/media_tweet_author_details" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:foreground="?attr/selectableItemBackground"
@@ -88,7 +101,7 @@
                 app:chipIcon="@drawable/ic_comment_24"
                 app:chipIconTint="?android:textColorPrimary"
                 app:chipBackgroundColor="?attr/colorSurfaceVariant"
-                android:text="6.2K"/>
+                tools:text="6.2K"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/single_image_tweet_retweet_chip"
@@ -98,7 +111,7 @@
                 app:chipIcon="@drawable/ic_rotation_24"
                 app:chipIconTint="?android:textColorPrimary"
                 app:chipBackgroundColor="?attr/colorSurfaceVariant"
-                android:text="17.8K"/>
+                tools:text="17.8K"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/single_image_tweet_like_chip"
@@ -108,7 +121,7 @@
                 app:chipIcon="@drawable/ic_like"
                 app:chipIconTint="?android:textColorPrimary"
                 app:chipBackgroundColor="?attr/colorSurfaceVariant"
-                android:text="262K"/>
+                tools:text="262K"/>
 
 
         </com.google.android.material.chip.ChipGroup>
