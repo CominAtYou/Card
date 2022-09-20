@@ -3,19 +3,20 @@ package com.cominatyou.card;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.cominatyou.card.activityhelpers.WindowUtil;
 import com.cominatyou.card.adapters.TimelineAdapter;
 import com.cominatyou.card.databinding.FragmentTimelineBinding;
-import com.squareup.picasso.Picasso;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONObject;
 
@@ -48,5 +49,28 @@ public class TimelineFragment extends Fragment {
                 requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(), "Failed to get timeline", Toast.LENGTH_SHORT).show());
             }
         }).start();
+
+        ((BottomNavigationView) requireActivity().findViewById(R.id.bottom_navigation)).setOnItemReselectedListener(this::recyclerViewScrollToTop);
+    }
+
+    private void recyclerViewScrollToTop(MenuItem item) {
+        System.out.println("Hit");
+        if (item.getItemId() != R.id.timeline) return;
+
+        binding.timelineRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    if (!recyclerView.canScrollVertically(-1)) { // if the scroll is stopped before it hits the top, do not expand the toolbar
+                        binding.timelineFragmentAppBarLayout.setExpanded(true, true);
+                    }
+
+                    recyclerView.removeOnScrollListener(this);
+                }
+            }
+        });
+
+        binding.timelineRecyclerView.smoothScrollToPosition(0);
     }
 }

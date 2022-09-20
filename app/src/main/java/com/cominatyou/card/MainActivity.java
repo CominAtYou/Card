@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         binding.bottomNavigation.setOnItemSelectedListener(item -> BottomNavigationFragmentManager.switchFragment(this, item));
-        binding.bottomNavigation.setOnItemReselectedListener(item -> {});
 
 
         SharedPreferences config = getSharedPreferences("config", MODE_PRIVATE);
