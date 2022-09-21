@@ -1,27 +1,23 @@
 package com.cominatyou.card;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cominatyou.card.activityhelpers.TimelineUtil;
 import com.cominatyou.card.activityhelpers.WindowUtil;
-import com.cominatyou.card.adapters.TimelineAdapter;
 import com.cominatyou.card.databinding.FragmentTimelineBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.json.JSONObject;
-
 public class TimelineFragment extends Fragment {
-    private FragmentTimelineBinding binding;
+    public FragmentTimelineBinding binding;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,31 +29,19 @@ public class TimelineFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         WindowUtil.addPaddingForBottom(requireContext(), binding.timelineRecyclerView);
 
-        final String user_id = requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("id", null);
-        final String url =  "https://api.twitter.com/2/users/" + user_id + "/timelines/reverse_chronological?tweet.fields=created_at,text,referenced_tweets,entities,public_metrics,id&expansions=entities.mentions.username,author_id,referenced_tweets.id,referenced_tweets.id.author_id,in_reply_to_user_id&user.fields=profile_image_url,name,username,id&media.fields=duration_ms,preview_image_url,type,url";
+        binding.fragmentTimelineSwipeRefreshLayout.setColorSchemeColors(requireActivity().getColor(R.color.md_theme_light_primary));
 
-        new Thread(() -> {
-            try {
-                final JSONObject response = JsonNetworkRequest.getObject(requireContext(), url);
+        TimelineUtil.getTimeline(this, () -> {
+            ((BottomNavigationView) requireActivity().findViewById(R.id.bottom_navigation)).setOnItemReselectedListener(this::recyclerViewScrollToTop);
 
-                requireActivity().runOnUiThread(() -> {
-                    binding.timelineRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-                    binding.timelineRecyclerView.setAdapter(new TimelineAdapter(response));
-                });
-            }
-            catch (Exception e) {
-                requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(), "Failed to get timeline", Toast.LENGTH_SHORT).show());
-            }
-        }).start();
-
-        ((BottomNavigationView) requireActivity().findViewById(R.id.bottom_navigation)).setOnItemReselectedListener(this::recyclerViewScrollToTop);
+            binding.fragmentTimelineSwipeRefreshLayout.setOnRefreshListener(() -> TimelineUtil.refreshTimeline(this));
+        });
     }
 
     private void recyclerViewScrollToTop(MenuItem item) {
-        System.out.println("Hit");
         if (item.getItemId() != R.id.timeline) return;
 
-        binding.timelineRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        final RecyclerView.OnScrollListener listener = new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -69,8 +53,23 @@ public class TimelineFragment extends Fragment {
                     recyclerView.removeOnScrollListener(this);
                 }
             }
-        });
+        };
 
-        binding.timelineRecyclerView.smoothScrollToPosition(0);
+        binding.timelineRecyclerView.addOnScrollListener(listener);
+
+        // if the scroll position is far down enough, the scroll to the top can take quite a while.
+        // determine if the scroll position is far down enough to warrant just jumping to the top, instead of scrolling to the top
+        final float numberOfItems = binding.timelineRecyclerView.getAdapter().getItemCount();
+        final LinearLayoutManager layoutManager = (LinearLayoutManager) binding.timelineRecyclerView.getLayoutManager();
+        float firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+
+        if (firstVisiblePosition / numberOfItems < 0.4f) {
+            binding.timelineRecyclerView.smoothScrollToPosition(0);
+        }
+        else {
+            binding.timelineRecyclerView.removeOnScrollListener(listener);
+            binding.timelineRecyclerView.scrollToPosition(0);
+            binding.timelineFragmentAppBarLayout.setExpanded(true);
+        }
     }
 }
