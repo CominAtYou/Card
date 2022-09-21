@@ -21,7 +21,7 @@ public class TokenManager {
         return context.getSharedPreferences("auth", Context.MODE_PRIVATE).getString("access_token", null);
     }
 
-    public static void refresh(Context context) throws IOException, JSONException {
+    public static void refresh(Context context) throws Exception {
         final String refreshToken = context.getSharedPreferences("auth", Context.MODE_PRIVATE).getString("refresh_token", null);
 
         final OkHttpClient client = GlobalHttpClient.getInstance();
@@ -36,6 +36,10 @@ public class TokenManager {
 
         okhttp3.Response response = client.newCall(request).execute();
         final JSONObject respJson = new JSONObject(response.body().string());
+
+        if (!response.isSuccessful()) {
+            throw new Exception("Failed to refresh token: " + respJson);
+        }
 
         context.getSharedPreferences("auth", Context.MODE_PRIVATE).edit()
                 .putString("access_token", respJson.getString("access_token"))
