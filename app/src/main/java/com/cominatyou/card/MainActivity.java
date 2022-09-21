@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
         binding.bottomNavigation.setOnItemSelectedListener(item -> BottomNavigationFragmentManager.switchFragment(this, item));
 
-
         SharedPreferences config = getSharedPreferences("config", MODE_PRIVATE);
         SharedPreferences userData = getSharedPreferences("user_data", MODE_PRIVATE);
         SharedPreferences authSharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);

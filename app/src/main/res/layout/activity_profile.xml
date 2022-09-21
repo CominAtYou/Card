@@ -143,7 +143,7 @@
                             android:maxWidth="165dp"
                             android:maxLines="1"
                             android:paddingStart="0dp"
-                            android:paddingEnd="16dp"
+                            android:paddingEnd="10dp"
                             tools:text="Kansas City, MO" />
 
                     </LinearLayout>
