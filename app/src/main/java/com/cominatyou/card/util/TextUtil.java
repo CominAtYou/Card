@@ -2,6 +2,7 @@ package com.cominatyou.card.util;
 
 import android.text.Spannable;
 import android.text.TextPaint;
+import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 
 public class TextUtil {

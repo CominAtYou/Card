@@ -14,10 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cominatyou.card.ProfileActivity;
+import com.cominatyou.card.R;
 import com.cominatyou.card.data.Tweet;
+import com.cominatyou.card.util.LinkOnTouchListener;
 import com.cominatyou.card.util.LinkUtil;
 import com.cominatyou.card.util.NumberUtil;
-import com.cominatyou.card.R;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.squareup.picasso.Picasso;
@@ -102,7 +103,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
         if (tweet.getUrls().length() > 0) {
             holder.tweetText.setText(LinkUtil.addHyperlinks(tweet.getUrls(), unescapedContent));
-            holder.tweetText.setMovementMethod(LinkMovementMethod.getInstance());
+            holder.tweetText.setOnTouchListener(LinkOnTouchListener.getListener());
         }
         else {
             holder.tweetText.setText(unescapedContent);
