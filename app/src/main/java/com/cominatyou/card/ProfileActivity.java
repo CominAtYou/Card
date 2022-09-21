@@ -2,6 +2,7 @@ package com.cominatyou.card;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Toast;
 
@@ -12,6 +13,7 @@ import androidx.core.view.WindowCompat;
 import com.cominatyou.card.auth.TokenManager;
 import com.cominatyou.card.databinding.ActivityProfileBinding;
 import com.cominatyou.card.util.GlobalHttpClient;
+import com.cominatyou.card.util.LinkUtil;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -64,7 +66,17 @@ public class ProfileActivity extends AppCompatActivity {
                     Picasso.get().load(user.optString("profile_image_url").replace("normal", "400x400")).into(binding.profileAvatar);
                     binding.activityProfileToolbar.setTitle(user.optString("name"));
                     binding.profileUsername.setText("@" + user.optString("username"));
-                    binding.bioText.setText(user.optString("description"));
+
+                    final JSONObject entities = user.optJSONObject("entities");
+                    if (entities != null && entities.has("description") && entities.optJSONObject("description").has("urls")) {
+                        final JSONArray urls = entities.optJSONObject("description").optJSONArray("urls");
+                        binding.bioText.setText(LinkUtil.addHyperlinks(urls, user.optString("description")));
+                        binding.bioText.setMovementMethod(LinkMovementMethod.getInstance());
+                    }
+                    else {
+                        binding.bioText.setText(user.optString("description"));
+                    }
+
                     binding.profileLocationText.setText(user.optString("location"));
 
                     if (!user.optString("url").equals("")) {

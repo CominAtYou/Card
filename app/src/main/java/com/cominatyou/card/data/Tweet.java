@@ -2,6 +2,7 @@ package com.cominatyou.card.data;
 
 import com.cominatyou.card.auth.Auth;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.Instant;
@@ -13,6 +14,7 @@ public class Tweet {
     private final Metrics metrics;
     private final String text;
     private final Author author;
+    private final JSONArray urls;
 
     public Tweet(JSONObject tweet, Metrics metrics, Author author) {
         this.id = tweet.optString("id");
@@ -20,6 +22,11 @@ public class Tweet {
         this.metrics = metrics;
         this.text = tweet.optString("text");
         this.author = author;
+        if (tweet.has("entities") && tweet.optJSONObject("entities").has("urls")) {
+            this.urls = tweet.optJSONObject("entities").optJSONArray("urls");
+        } else {
+            this.urls = new JSONArray();
+        }
     }
 
     public String getId() {
@@ -40,6 +47,10 @@ public class Tweet {
 
     public Author getAuthor() {
         return author;
+    }
+
+    public JSONArray getUrls() {
+        return urls;
     }
 
     public static class Metrics {

@@ -3,6 +3,7 @@ package com.cominatyou.card.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cominatyou.card.ProfileActivity;
 import com.cominatyou.card.data.Tweet;
+import com.cominatyou.card.util.LinkUtil;
 import com.cominatyou.card.util.NumberUtil;
 import com.cominatyou.card.R;
 import com.google.android.material.chip.Chip;
@@ -96,7 +98,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         final Tweet tweet = tweets.get(position);
 
         // Tweet content is HTML encoded. I don't know why.
-        holder.tweetText.setText(StringEscapeUtils.unescapeHtml4(tweet.getText()));
+        final String unescapedContent = StringEscapeUtils.unescapeHtml4(tweet.getText());
+
+        if (tweet.getUrls().length() > 0) {
+            holder.tweetText.setText(LinkUtil.addHyperlinks(tweet.getUrls(), unescapedContent));
+            holder.tweetText.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+        else {
+            holder.tweetText.setText(unescapedContent);
+        }
+
         Picasso.get().load(tweet.getAuthor().getProfileImageUrl().replace("normal", "400x400")).into(holder.profileImage);
         holder.authorName.setText(tweet.getAuthor().getName());
 
