@@ -53,13 +53,28 @@
                 android:textSize="14sp"
                 tools:text="User" />
 
-            <TextView
-                android:id="@+id/text_only_username_timestamp"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/gs_text_regular"
-                android:textSize="14sp"
-                tools:text="\@Username • 14h" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_only_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gs_text_regular"
+                    android:textSize="14sp"
+                    tools:text="\@Username · " />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/text_only_timestamp"
+                    android:fontFamily="@font/gs_text_regular"
+                    android:textSize="14sp"
+                    tools:text="1 minute ago" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

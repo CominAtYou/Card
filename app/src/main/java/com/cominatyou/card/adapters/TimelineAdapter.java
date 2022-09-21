@@ -60,7 +60,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         private final TextView tweetText;
         private final ShapeableImageView profileImage;
         private final TextView authorName;
-        private final TextView authorSubtext;
+        private final TextView authorUsername;
+        private final TextView timestamp;
         private final Chip retweetButton;
         private final Chip replyButton;
         private final Chip likeButton;
@@ -71,7 +72,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
             tweetText = itemView.findViewById(R.id.tweet_text_content);
             profileImage = itemView.findViewById(R.id.text_only_tweet_profile_picture);
             authorName = itemView.findViewById(R.id.text_only_author_name);
-            authorSubtext = itemView.findViewById(R.id.text_only_username_timestamp);
+            authorUsername = itemView.findViewById(R.id.text_only_username);
+            timestamp = itemView.findViewById(R.id.text_only_timestamp);
             retweetButton = itemView.findViewById(R.id.text_only_tweet_retweet_chip);
             replyButton = itemView.findViewById(R.id.text_only_tweet_reply_chip);
             likeButton = itemView.findViewById(R.id.text_only_tweet_like_chip);
@@ -112,7 +114,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
             creationDateText = seconds / 86400 + "d";
         }
 
-        holder.authorSubtext.setText("@" + tweet.getAuthor().getUsername() + " · " + creationDateText);
+        holder.authorUsername.setText("@" + tweet.getAuthor().getUsername() + " · ");
+        holder.timestamp.setText(creationDateText);
         holder.replyButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getReplyCount()));
         holder.retweetButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getRetweetCount() + tweet.getMetrics().getQuoteCount()));
         holder.likeButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getLikeCount()));
