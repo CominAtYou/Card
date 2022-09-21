@@ -16,4 +16,6 @@
     <string name="fragment_auth_failed_error_details_label">Details</string>
     <string name="activity_profile_followers_label">Followers</string>
     <string name="activity_profile_following_label">Following</string>
+    <string name="activity_profile_follow_button_label">Follow</string>
+    <string name="activity_profile_unfollow_button_label">Unfollow</string>
 </resources>

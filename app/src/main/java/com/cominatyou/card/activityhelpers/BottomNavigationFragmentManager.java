@@ -38,6 +38,7 @@ public class BottomNavigationFragmentManager {
 
         if (item.getItemId() == R.id.timeline) {
             activity.binding.bottomNavigation.getMenu().getItem(0).setIcon(R.drawable.ic_home_filled_24);
+            activity.binding.floatingActionButton.show();
             final Fragment timelineFragment = activity.getSupportFragmentManager().findFragmentByTag("timeline");
 
             if (timelineFragment != null) {
@@ -48,6 +49,7 @@ public class BottomNavigationFragmentManager {
             }
         }
         else if (item.getItemId() == R.id.explore) {
+            activity.binding.floatingActionButton.hide();
             final Fragment exploreFragment = activity.getSupportFragmentManager().findFragmentByTag("explore");
 
             if (exploreFragment != null) {
@@ -58,6 +60,7 @@ public class BottomNavigationFragmentManager {
             }
         }
         else if (item.getItemId() == R.id.mentions) {
+            activity.binding.floatingActionButton.hide();
             final Fragment activityFragment = activity.getSupportFragmentManager().findFragmentByTag("activity");
 
             if (activityFragment != null) {
