@@ -97,7 +97,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
         // Tweet content is HTML encoded. I don't know why.
         holder.tweetText.setText(StringEscapeUtils.unescapeHtml4(tweet.getText()));
-        Picasso.get().load(tweet.getAuthor().getProfileImageUrl()).into(holder.profileImage);
+        Picasso.get().load(tweet.getAuthor().getProfileImageUrl().replace("normal", "400x400")).into(holder.profileImage);
         holder.authorName.setText(tweet.getAuthor().getName());
 
         // format the creation date as either "1s", "1m", "1h", or "1d"
