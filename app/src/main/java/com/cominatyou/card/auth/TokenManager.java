@@ -3,6 +3,7 @@ package com.cominatyou.card.auth;
 import android.content.Context;
 
 import com.cominatyou.card.util.Config;
+import com.cominatyou.card.util.GlobalHttpClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,7 +24,7 @@ public class TokenManager {
     public static void refresh(Context context) throws IOException, JSONException {
         final String refreshToken = context.getSharedPreferences("auth", Context.MODE_PRIVATE).getString("refresh_token", null);
 
-        final OkHttpClient client = new OkHttpClient();
+        final OkHttpClient client = GlobalHttpClient.getInstance();
         final String url = "https://api.twitter.com/2/oauth2/token";
         final String urlParameters = "grant_type=refresh_token&refresh_token=" + refreshToken + "&client_id=" + Config.CLIENT_ID;
 

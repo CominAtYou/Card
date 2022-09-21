@@ -11,6 +11,7 @@ import androidx.core.view.WindowCompat;
 
 import com.cominatyou.card.auth.TokenManager;
 import com.cominatyou.card.databinding.ActivityProfileBinding;
+import com.cominatyou.card.util.GlobalHttpClient;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -35,7 +36,7 @@ public class ProfileActivity extends AppCompatActivity {
         final String userId = getIntent().getStringExtra("user_id");
         final boolean isId = getIntent().getBooleanExtra("is_id", false);
 
-        final OkHttpClient client = new OkHttpClient();
+        final OkHttpClient client = GlobalHttpClient.getInstance();
         final String path = "/?user.fields=created_at,description,entities,id,location,name,profile_image_url,protected,public_metrics,username,pinned_tweet_id,url";
         final Request request = new Request.Builder()
                 .url((isId ? "https://api.twitter.com/2/users/" : "https://api.twitter.com/2/users/by/username/") + userId + path)

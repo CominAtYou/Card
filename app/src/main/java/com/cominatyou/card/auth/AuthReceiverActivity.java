@@ -11,6 +11,7 @@ import com.cominatyou.card.MainActivity;
 import com.cominatyou.card.util.Config;
 import com.cominatyou.card.R;
 import com.cominatyou.card.databinding.ActivityAuthReceiverBinding;
+import com.cominatyou.card.util.GlobalHttpClient;
 import com.google.android.material.color.DynamicColors;
 
 import org.json.JSONException;
@@ -41,7 +42,7 @@ public class AuthReceiverActivity extends AppCompatActivity {
         final String url = "https://api.twitter.com/2/oauth2/token";
         final MediaType formUrlEnconded = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
 
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = GlobalHttpClient.getInstance();
         okhttp3.Request request = new okhttp3.Request.Builder()
                 .url(url)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
