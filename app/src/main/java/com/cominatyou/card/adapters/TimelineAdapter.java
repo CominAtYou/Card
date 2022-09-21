@@ -129,4 +129,31 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
     public int getItemCount() {
         return tweets.size();
     }
+
+    public void addToBeginning(@NonNull JSONObject response) {
+        final JSONArray data = response.optJSONArray("data");
+
+        for (int i = data.length() - 1; i > -1; i--) {
+            final JSONObject tweet = data.optJSONObject(i);
+            final Tweet.Metrics metrics = new Tweet.Metrics(tweet.optJSONObject("public_metrics"));
+            final String authorId = tweet.optString("author_id");
+
+            // find the tweet author object in the "users" array inside the "includes" object, based on their id
+            final JSONObject includes = response.optJSONObject("includes");
+            final JSONArray users = includes.optJSONArray("users");
+
+            for (int j = 0; j < users.length(); j++) {
+                final JSONObject user = users.optJSONObject(j);
+                final String id = user.optString("id");
+
+                if (id.equals(authorId)) {
+                    final Tweet.Author author = new Tweet.Author(user);
+                    tweets.add(0, new Tweet(tweet, metrics, author));
+                    break;
+                }
+            }
+
+            notifyItemRangeInserted(0, data.length());
+        }
+    }
 }

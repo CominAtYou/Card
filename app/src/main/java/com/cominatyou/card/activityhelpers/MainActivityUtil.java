@@ -41,6 +41,7 @@ public class MainActivityUtil {
             try {
                 TokenManager.refresh(activity);
                 activity.runOnUiThread(() -> activity.getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, TimelineFragment.class, null, "timeline").commit());
+                activity.runOnUiThread(() -> Toast.makeText(activity, "Successfully refreshed access token", Toast.LENGTH_SHORT).show());
             }
             catch (Exception e) {
                 e.printStackTrace();

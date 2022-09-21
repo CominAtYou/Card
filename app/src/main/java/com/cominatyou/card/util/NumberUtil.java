@@ -5,7 +5,7 @@ import java.util.Locale;
 public class NumberUtil {
     public static String formatNumber(int number) {
         if (number < 10000) {
-            return String.valueOf(number);
+            return String.format(Locale.getDefault(), "%,d", number);
         }
 
         final boolean lessThanOneMillion = number < 1_000_000;
