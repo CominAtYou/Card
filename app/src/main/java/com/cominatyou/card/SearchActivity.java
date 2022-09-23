@@ -59,9 +59,6 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = new Intent(this, ProfileActivity.class)
-                .putExtra("user_id", binding.searchField.getText().toString().trim());
-
-        binding.activitySearchGoToProfileCard.setOnClickListener(v -> startActivity(intent));
+        binding.activitySearchGoToProfileCard.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class).putExtra("user_id", binding.searchField.getText().toString().trim())));
     }
 }
