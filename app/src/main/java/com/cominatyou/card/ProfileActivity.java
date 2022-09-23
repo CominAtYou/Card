@@ -46,6 +46,18 @@ public class ProfileActivity extends AppCompatActivity {
                 .build();
 
         new Thread(() -> {
+            if (TokenManager.isExpired(this)) {
+                try {
+                    TokenManager.refresh(this);
+                    runOnUiThread(() -> Toast.makeText(this, "Successfully refreshed access token", Toast.LENGTH_SHORT).show());
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    runOnUiThread(() -> Toast.makeText(this, "Failed to refresh token", Toast.LENGTH_SHORT).show());
+                    return;
+                }
+            }
+
             try (Response response = client.newCall(request).execute()) {
                 final String data = response.body().string();
                 final JSONObject user = new JSONObject(data).getJSONObject("data");

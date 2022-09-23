@@ -47,4 +47,8 @@ public class TokenManager {
                 .putLong("expires_at", Instant.now().getEpochSecond() + respJson.getInt("expires_in"))
                 .apply();
     }
+
+    public static boolean isExpired(Context context) {
+        return Instant.now().getEpochSecond() > context.getSharedPreferences("auth", Context.MODE_PRIVATE).getLong("expires_at", 0);
+    }
 }
