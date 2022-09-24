@@ -6,9 +6,9 @@ import android.widget.Toast;
 
 import com.cominatyou.card.JsonNetworkRequest;
 import com.cominatyou.card.MainActivity;
+import com.cominatyou.card.R;
 import com.cominatyou.card.TimelineFragment;
 import com.cominatyou.card.auth.TokenManager;
-import com.cominatyou.card.R;
 
 import org.json.JSONObject;
 

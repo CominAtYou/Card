@@ -9,10 +9,9 @@ import androidx.core.view.WindowCompat;
 import com.cominatyou.card.activityhelpers.BottomNavigationFragmentManager;
 import com.cominatyou.card.activityhelpers.MainActivityUtil;
 import com.cominatyou.card.auth.Auth;
+import com.cominatyou.card.auth.TokenManager;
 import com.cominatyou.card.databinding.ActivityMainBinding;
 import com.google.android.material.color.DynamicColors;
-
-import java.time.Instant;
 
 public class MainActivity extends AppCompatActivity {
     public ActivityMainBinding binding;
@@ -28,15 +27,13 @@ public class MainActivity extends AppCompatActivity {
 
         binding.bottomNavigation.setOnItemSelectedListener(item -> BottomNavigationFragmentManager.switchFragment(this, item));
 
-
         SharedPreferences config = getSharedPreferences("config", MODE_PRIVATE);
         SharedPreferences userData = getSharedPreferences("user_data", MODE_PRIVATE);
-        SharedPreferences authSharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
 
         if (!config.getBoolean("authenticated", false)) {
             Auth.authenticate(this);
         }
-        else if (authSharedPreferences.getLong("expires_at", 0) < Instant.now().getEpochSecond()) {
+        else if (TokenManager.isExpired(this)) {
             MainActivityUtil.refreshToken(this);
         }
         else if (userData.getString("id", null)  == null) {

@@ -14,7 +14,6 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -28,7 +27,7 @@ public class TimelineUtil {
 
     public static void getTimeline(TimelineFragment fragment, Runnable callback) {
         final String user_id = fragment.requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("id", null);
-        final String url =  "https://api.twitter.com/2/users/" + user_id + "/timelines/reverse_chronological?tweet.fields=created_at,text,referenced_tweets,entities,public_metrics,id&expansions=entities.mentions.username,author_id,referenced_tweets.id,referenced_tweets.id.author_id,in_reply_to_user_id&user.fields=profile_image_url,name,username,id&media.fields=duration_ms,preview_image_url,type,url";
+        final String url =  "https://api.twitter.com/2/users/" + user_id + "/timelines/reverse_chronological?tweet.fields=created_at,text,referenced_tweets,entities,public_metrics,id,attachments&expansions=attachments.media_keys,entities.mentions.username,author_id,referenced_tweets.id,referenced_tweets.id.author_id,in_reply_to_user_id&user.fields=profile_image_url,name,username,id&media.fields=duration_ms,preview_image_url,type,url,width,height";
 
         new Thread(() -> {
             try {
@@ -49,14 +48,13 @@ public class TimelineUtil {
 
     public static void refreshTimeline(TimelineFragment fragment) {
         final String lastTimelineUpdate = fragment.requireContext().getSharedPreferences("config", Context.MODE_PRIVATE).getString("last_timeline_update", null);
-        long expiresAt = fragment.requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE).getLong("expires_at", 0);
 
         final String user_id = fragment.requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("id", null);
-        final String url =  "https://api.twitter.com/2/users/" + user_id + "/timelines/reverse_chronological?start_time=" + lastTimelineUpdate + "&tweet.fields=created_at,text,referenced_tweets,entities,public_metrics,id&expansions=entities.mentions.username,author_id,referenced_tweets.id,referenced_tweets.id.author_id,in_reply_to_user_id&user.fields=profile_image_url,name,username,id&media.fields=duration_ms,preview_image_url,type,url";
+        final String url =  "https://api.twitter.com/2/users/" + user_id + "/timelines/reverse_chronological?start_time=" + lastTimelineUpdate + "&tweet.fields=created_at,text,referenced_tweets,entities,public_metrics,id,attachments&expansions=attachments.media_keys,entities.mentions.username,author_id,referenced_tweets.id,referenced_tweets.id.author_id,in_reply_to_user_id&user.fields=profile_image_url,name,username,id&media.fields=duration_ms,preview_image_url,type,url,width,height";
 
         new Thread(() -> {
             try {
-                if (Instant.now().getEpochSecond() > expiresAt) {
+                if (TokenManager.isExpired(fragment.requireContext())) {
                     TokenManager.refresh(fragment.requireContext());
                 }
 
@@ -75,7 +73,10 @@ public class TimelineUtil {
             }
             catch (Exception e) {
                 e.printStackTrace();
-                fragment.requireActivity().runOnUiThread(() -> Toast.makeText(fragment.requireContext(), "Something happened while trying to get new Tweets.", Toast.LENGTH_SHORT).show());
+                fragment.requireActivity().runOnUiThread(() -> {
+                    Toast.makeText(fragment.requireContext(), "Something happened while trying to get new Tweets.", Toast.LENGTH_SHORT).show();
+                    fragment.binding.fragmentTimelineSwipeRefreshLayout.setRefreshing(false);
+                });
             }
         }).start();
     }

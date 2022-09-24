@@ -8,15 +8,18 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.cominatyou.card.MainActivity;
-import com.cominatyou.card.util.Config;
 import com.cominatyou.card.R;
 import com.cominatyou.card.databinding.ActivityAuthReceiverBinding;
+import com.cominatyou.card.util.Config;
 import com.cominatyou.card.util.GlobalHttpClient;
 import com.google.android.material.color.DynamicColors;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.Instant;
 
 import okhttp3.MediaType;
@@ -61,16 +64,19 @@ public class AuthReceiverActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void saveCredentials(String json) throws JSONException {
+    private void saveCredentials(String json) throws JSONException, IOException {
         JSONObject result = new JSONObject(json);
 
-        getSharedPreferences("auth", MODE_PRIVATE).edit()
-                .putString("access_token", result.getString("access_token"))
-                .putString("refresh_token", result.getString("refresh_token"))
-                .putLong("expires_at", Instant.now().getEpochSecond() + result.getInt("expires_in"))
-                .remove("code_verifier")
-                .apply();
+        long expiresAt = Instant.now().getEpochSecond() + result.getInt("expires_in");
+        result.put("expires_at", expiresAt);
+        result.remove("expires_in");
+        result.remove("scope");
+        result.remove("token_type");
 
+        final File authData = new File(getFilesDir(), "auth.json");
+        Files.write(authData.toPath(), result.toString().getBytes());
+
+        getSharedPreferences("auth", MODE_PRIVATE).edit().remove("code_verifier").apply();
         getSharedPreferences("config", MODE_PRIVATE).edit().putBoolean("authenticated", true).apply();
 
         runOnUiThread(() -> Toast.makeText(this, "Successfully logged in to Twitter", Toast.LENGTH_SHORT).show());

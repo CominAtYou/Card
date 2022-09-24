@@ -49,7 +49,7 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() > 0) {
+                if (s.length() > 0 && s.toString().matches("^[A-Za-z0-9_]{1,15} *$")) {
                     binding.activitySearchGoToProfileCard.setVisibility(View.VISIBLE);
                     binding.activitySearchGoToProfileText.setText(getString(R.string.activity_search_go_to_user, s));
                 }

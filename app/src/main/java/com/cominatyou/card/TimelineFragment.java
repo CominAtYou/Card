@@ -33,7 +33,6 @@ public class TimelineFragment extends Fragment {
 
         TimelineUtil.getTimeline(this, () -> {
             ((BottomNavigationView) requireActivity().findViewById(R.id.bottom_navigation)).setOnItemReselectedListener(this::recyclerViewScrollToTop);
-
             binding.fragmentTimelineSwipeRefreshLayout.setOnRefreshListener(() -> TimelineUtil.refreshTimeline(this));
         });
     }

@@ -1,17 +1,23 @@
 package com.cominatyou.card;
 
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.WindowCompat;
 
 import com.cominatyou.card.auth.TokenManager;
 import com.cominatyou.card.databinding.ActivityProfileBinding;
 import com.cominatyou.card.util.GlobalHttpClient;
+import com.cominatyou.card.util.LinkUtil;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -44,9 +50,35 @@ public class ProfileActivity extends AppCompatActivity {
                 .build();
 
         new Thread(() -> {
+            if (TokenManager.isExpired(this)) {
+                try {
+                    TokenManager.refresh(this);
+                    runOnUiThread(() -> Toast.makeText(this, "Successfully refreshed access token", Toast.LENGTH_SHORT).show());
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    runOnUiThread(() -> Toast.makeText(this, "Failed to refresh token", Toast.LENGTH_SHORT).show());
+                    return;
+                }
+            }
+
             try (Response response = client.newCall(request).execute()) {
-                final String data = response.body().string();
-                final JSONObject user = new JSONObject(data).getJSONObject("data");
+                final JSONObject responseObject = new JSONObject(response.body().string());
+                if (responseObject.has("errors")) {
+                    final JSONObject error = responseObject.getJSONArray("errors").getJSONObject(0);
+                    runOnUiThread(() -> {
+                        Snackbar snackbar = Snackbar.make(binding.getRoot(), ProfileActivityUtil.getProfileActivityError(this, error.optString("detail"), userId), Snackbar.LENGTH_INDEFINITE);
+                        TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+                        Typeface font = ResourcesCompat.getFont(this, R.font.gs_text_regular);
+                        textView.setTypeface(font);
+
+                        snackbar.show();
+                    });
+                    return;
+                }
+
+                final JSONObject user = responseObject.getJSONObject("data");
+                final String savedUserId = getSharedPreferences("user_data", MODE_PRIVATE).getString("id", null);
                 runOnUiThread(() -> {
                     if (!user.has("location")) {
                         binding.profileLocationContainer.setVisibility(View.GONE);
@@ -60,11 +92,25 @@ public class ProfileActivity extends AppCompatActivity {
                     if (user.optString("description").equals("")) {
                         binding.bioText.setVisibility(View.GONE);
                     }
+                    if (savedUserId.equals(user.optString("id"))) {
+                        binding.profileFollowButton.setVisibility(View.GONE);
+                    }
+
 
                     Picasso.get().load(user.optString("profile_image_url").replace("normal", "400x400")).into(binding.profileAvatar);
                     binding.activityProfileToolbar.setTitle(user.optString("name"));
                     binding.profileUsername.setText("@" + user.optString("username"));
-                    binding.bioText.setText(user.optString("description"));
+
+                    final JSONObject entities = user.optJSONObject("entities");
+                    if (entities != null && entities.has("description") && entities.optJSONObject("description").has("urls")) {
+                        final JSONArray urls = entities.optJSONObject("description").optJSONArray("urls");
+                        binding.bioText.setText(LinkUtil.addHyperlinks(urls, user.optString("description")));
+                        binding.bioText.setMovementMethod(LinkMovementMethod.getInstance());
+                    }
+                    else {
+                        binding.bioText.setText(user.optString("description"));
+                    }
+
                     binding.profileLocationText.setText(user.optString("location"));
 
                     if (!user.optString("url").equals("")) {
@@ -86,6 +132,7 @@ public class ProfileActivity extends AppCompatActivity {
                     binding.followerCount.setText(String.format(Locale.getDefault(), "%,d", user.optJSONObject("public_metrics").optInt("followers_count")));
                     binding.followingCount.setText(String.format(Locale.getDefault(), "%,d", user.optJSONObject("public_metrics").optInt("following_count")));
 
+                    binding.activityProfileProgressbar.setVisibility(View.GONE);
                     binding.profileCard.setVisibility(View.VISIBLE);
                 });
             } catch (Exception e) {
