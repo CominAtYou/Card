@@ -8,4 +8,6 @@ package com.cominatyou.card.util;
  */
 public class Config {
     public static final String CLIENT_ID = "";
+    public static final String CONSUMER_KEY = "";
+    public static final String CONSUMER_SECRET = "";
 }
