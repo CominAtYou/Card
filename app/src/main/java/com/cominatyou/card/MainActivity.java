@@ -2,6 +2,7 @@ package com.cominatyou.card;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
@@ -31,10 +32,13 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences userData = getSharedPreferences("user_data", MODE_PRIVATE);
 
         if (!config.getBoolean("authenticated", false)) {
-            Auth.authenticate(this);
-        }
-        else if (TokenManager.isExpired(this)) {
-            MainActivityUtil.refreshToken(this);
+            try {
+                Auth.authenticate(this);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Failed to authenticate", Toast.LENGTH_SHORT).show();
+            }
         }
         else if (userData.getString("id", null)  == null) {
             MainActivityUtil.getUserData(this);

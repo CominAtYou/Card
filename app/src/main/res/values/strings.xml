@@ -20,4 +20,6 @@
     <string name="activity_profile_unfollow_button_label">Unfollow</string>
     <string name="activity_profile_cannot_find_user_message">Couldn\'t find @%1$s.</string>
     <string name="activity_profile_user_suspended_message">\@%1$s has been suspended from Twitter.</string>
+    <string name="bottom_sheet_reply_edit_text_hint">Reply</string>
+    <string name="tweet_reply_chip_label">Reply</string>
 </resources>

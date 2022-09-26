@@ -9,6 +9,7 @@ import com.cominatyou.card.JsonNetworkRequest;
 import com.cominatyou.card.TimelineFragment;
 import com.cominatyou.card.adapters.TimelineAdapter;
 import com.cominatyou.card.auth.TokenManager;
+import com.cominatyou.card.data.Tweet;
 
 import org.json.JSONObject;
 
@@ -26,58 +27,33 @@ public class TimelineUtil {
     }
 
     public static void getTimeline(TimelineFragment fragment, Runnable callback) {
-        final String user_id = fragment.requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("id", null);
-        final String url =  "https://api.twitter.com/2/users/" + user_id + "/timelines/reverse_chronological?tweet.fields=created_at,text,referenced_tweets,entities,public_metrics,id,attachments&expansions=attachments.media_keys,entities.mentions.username,author_id,referenced_tweets.id,referenced_tweets.id.author_id,in_reply_to_user_id&user.fields=profile_image_url,name,username,id&media.fields=duration_ms,preview_image_url,type,url,width,height";
-
-        new Thread(() -> {
-            try {
-                final JSONObject response = JsonNetworkRequest.getObject(fragment.requireContext(), url);
-
-                fragment.requireActivity().runOnUiThread(() -> {
-                    fragment.binding.timelineRecyclerView.setLayoutManager(new LinearLayoutManager(fragment.requireContext()));
-                    fragment.binding.timelineRecyclerView.setAdapter(new TimelineAdapter(response));
-                    fragment.requireContext().getSharedPreferences("config", Context.MODE_PRIVATE).edit().putString("last_timeline_update", df.format(new Date())).apply();
-                    callback.run();
-                });
-            }
-            catch (Exception e) {
-                fragment.requireActivity().runOnUiThread(() -> Toast.makeText(fragment.requireContext(), "Failed to get timeline", Toast.LENGTH_SHORT).show());
-            }
-        }).start();
+        JsonNetworkRequest.getArray(fragment.requireContext(), "https://api.twitter.com/1.1/statuses/home_timeline.json?count=200&include_entities=true&tweet_mode=extended", response -> {
+            fragment.binding.timelineRecyclerView.setLayoutManager(new LinearLayoutManager(fragment.requireContext()));
+            fragment.binding.timelineRecyclerView.setAdapter(new TimelineAdapter(response, fragment.getParentFragmentManager()));
+            callback.run();
+        });
     }
 
     public static void refreshTimeline(TimelineFragment fragment) {
-        final String lastTimelineUpdate = fragment.requireContext().getSharedPreferences("config", Context.MODE_PRIVATE).getString("last_timeline_update", null);
+        final Tweet tweet = ((TimelineAdapter) fragment.binding.timelineRecyclerView.getAdapter()).getItemAtIndex(0);
+        final String since_id = tweet.getId();
+        final String url =  "https://api.twitter.com/1.1/statuses/home_timeline.json?count=200&include_entities=true&tweet_mode=extended&since_id=" + since_id;
 
-        final String user_id = fragment.requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("id", null);
-        final String url =  "https://api.twitter.com/2/users/" + user_id + "/timelines/reverse_chronological?start_time=" + lastTimelineUpdate + "&tweet.fields=created_at,text,referenced_tweets,entities,public_metrics,id,attachments&expansions=attachments.media_keys,entities.mentions.username,author_id,referenced_tweets.id,referenced_tweets.id.author_id,in_reply_to_user_id&user.fields=profile_image_url,name,username,id&media.fields=duration_ms,preview_image_url,type,url,width,height";
-
-        new Thread(() -> {
-            try {
-                if (TokenManager.isExpired(fragment.requireContext())) {
-                    TokenManager.refresh(fragment.requireContext());
-                }
-
-                final JSONObject response = JsonNetworkRequest.getObject(fragment.requireContext(), url);
-                if (response.optJSONObject("meta").getInt("result_count") == 0) {
-                    fragment.binding.fragmentTimelineSwipeRefreshLayout.setRefreshing(false);
-                    return;
-                }
-
-                fragment.requireActivity().runOnUiThread(() -> {
-                    ((TimelineAdapter) fragment.binding.timelineRecyclerView.getAdapter()).addToBeginning(response);
-                    fragment.requireContext().getSharedPreferences("config", Context.MODE_PRIVATE).edit().putString("last_timeline_update", df.format(new Date())).apply();
-                    fragment.binding.fragmentTimelineSwipeRefreshLayout.setRefreshing(false);
-                    fragment.binding.timelineRecyclerView.scrollToPosition(0);
-                });
+        JsonNetworkRequest.getArray(fragment.requireContext(), url, response -> {
+            if (response == null) {
+                Toast.makeText(fragment.requireContext(), "Something happened while trying to get new Tweets.", Toast.LENGTH_SHORT).show();
+                fragment.binding.fragmentTimelineSwipeRefreshLayout.setRefreshing(false);
+                return;
             }
-            catch (Exception e) {
-                e.printStackTrace();
-                fragment.requireActivity().runOnUiThread(() -> {
-                    Toast.makeText(fragment.requireContext(), "Something happened while trying to get new Tweets.", Toast.LENGTH_SHORT).show();
-                    fragment.binding.fragmentTimelineSwipeRefreshLayout.setRefreshing(false);
-                });
-            }
-        }).start();
+
+           if (response.length() == 0) {
+             fragment.binding.fragmentTimelineSwipeRefreshLayout.setRefreshing(false);
+             return;
+           }
+
+           ((TimelineAdapter) fragment.binding.timelineRecyclerView.getAdapter()).addToBeginning(response);
+            fragment.binding.fragmentTimelineSwipeRefreshLayout.setRefreshing(false);
+            fragment.binding.timelineRecyclerView.scrollToPosition(0);
+        });
     }
 }

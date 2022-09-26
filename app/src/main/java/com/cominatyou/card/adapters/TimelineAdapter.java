@@ -4,27 +4,35 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cominatyou.card.JsonNetworkRequest;
 import com.cominatyou.card.ProfileActivity;
 import com.cominatyou.card.R;
+import com.cominatyou.card.activityhelpers.ReplyBottomSheet;
 import com.cominatyou.card.data.Tweet;
 import com.cominatyou.card.util.LinkOnTouchListener;
 import com.cominatyou.card.util.LinkUtil;
 import com.cominatyou.card.util.NumberUtil;
+import com.cominatyou.card.util.RelativeTimestamp;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.Instant;
@@ -33,30 +41,15 @@ import java.util.List;
 
 public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TimelineTweetHolder> {
     private final List<Tweet> tweets = new ArrayList<>();
+    private final FragmentManager fragmentManager;
 
-    public TimelineAdapter(JSONObject response) {
-        final JSONArray data = response.optJSONArray("data");
-
-        for (int i = 0; i < data.length(); i++) {
-            final JSONObject tweet = data.optJSONObject(i);
-            final Tweet.Metrics metrics = new Tweet.Metrics(tweet.optJSONObject("public_metrics"));
-            final String authorId = tweet.optString("author_id");
-
-            // find the tweet author object in the "users" array inside the "includes" object, based on their id
-            final JSONObject includes = response.optJSONObject("includes");
-            final JSONArray users = includes.optJSONArray("users");
-
-            for (int j = 0; j < users.length(); j++) {
-                final JSONObject user = users.optJSONObject(j);
-                final String id = user.optString("id");
-
-                if (id.equals(authorId)) {
-                    final Tweet.Author author = new Tweet.Author(user);
-                    tweets.add(new Tweet(tweet, metrics, author, getMedia(response, tweet)));
-                    break;
-                }
-            }
+    public TimelineAdapter(JSONArray response, FragmentManager fragmentManager) {
+        for (int i = 0; i < response.length(); i++) {
+            final JSONObject tweet = response.optJSONObject(i);
+            tweets.add(new Tweet(tweet));
         }
+
+        this.fragmentManager = fragmentManager;
     }
 
     public static class TimelineTweetHolder extends RecyclerView.ViewHolder {
@@ -113,7 +106,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         if (holder instanceof SingleMediaItemTimelineTweetHolder) {
             final SingleMediaItemTimelineTweetHolder singleMediaItemTimelineTweetHolder = (SingleMediaItemTimelineTweetHolder) holder;
             final Tweet.Media media = tweet.getMedia().get(0);
-            final String url = media.getPreviewImageUrl().isEmpty() ? media.getUrl() : media.getPreviewImageUrl();
+            final String url = media.getPreviewImageUrl() == null ? media.getUrl() : media.getPreviewImageUrl();
             Picasso.get().load(url).into(singleMediaItemTimelineTweetHolder.imageView);
 
             if (tweet.getText().isEmpty()) holder.tweetText.setVisibility(View.GONE);
@@ -133,24 +126,15 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
         // format the creation date as either "1s", "1m", "1h", or "1d"
         Instant creationDate = tweet.getCreation();
-        long seconds = Instant.now().getEpochSecond() - creationDate.getEpochSecond();
-        String creationDateText;
-        if (seconds < 60) {
-            creationDateText = seconds + "s";
-        } else if (seconds < 3600) {
-            creationDateText = seconds / 60 + "m";
-        } else if (seconds < 86400) {
-            creationDateText = seconds / 3600 + "h";
-        } else {
-            creationDateText = seconds / 86400 + "d";
-        }
 
-        holder.authorUsername.setText("@" + tweet.getAuthor().getUsername() + " · ");
-        holder.timestamp.setText(creationDateText);
-        holder.replyButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getReplyCount()));
+        holder.authorUsername.setText("@" + tweet.getAuthor().getUsername() + " • ");
+        holder.timestamp.setText(RelativeTimestamp.get(creationDate));
+//        holder.replyButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getReplyCount()));
         holder.retweetButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getRetweetCount() + tweet.getMetrics().getQuoteCount()));
         holder.likeButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getLikeCount()));
-        holder.itemView.setTag(tweet.getId());
+        holder.itemView.setTag(tweet);
+
+        holder.likeButton.setChipIconResource(tweet.isLiked() ? R.drawable.ic_like_filled : R.drawable.ic_like);
 
         final Context context = holder.itemView.getContext();
 
@@ -160,6 +144,55 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
             intent.launchUrl(context, Uri.parse("https://twitter.com/" + tweet.getAuthor().getUsername() + "/status/" + tweet.getId()));
         });
         holder.profileImage.setOnClickListener(v -> context.startActivity(profileIntent));
+
+        holder.replyButton.setOnClickListener(v -> {
+            final ReplyBottomSheet replyBottomSheet = new ReplyBottomSheet();
+            final Bundle bundle = new Bundle();
+            bundle.putSerializable("tweet", tweet);
+            replyBottomSheet.setArguments(bundle);
+
+            replyBottomSheet.show(fragmentManager, ReplyBottomSheet.TAG);
+        });
+
+        holder.likeButton.setOnClickListener(l -> {
+            if (!tweet.isLiked()) {
+                final String userId = context.getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("id", null);
+                JSONObject body = new JSONObject();
+                try {
+                    body.put("tweet_id", tweet.getId());
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "Failed to like tweet", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                JsonNetworkRequest.postObject(context, "https://api.twitter.com/2/users/" + userId + "/likes", body, response -> {
+                    if (response == null) {
+                        Toast.makeText(context, "Failed to like tweet", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        holder.likeButton.setChipIconResource(R.drawable.ic_like_filled);
+                        tweet.getMetrics().incrementLikeCount();
+                        tweet.setLiked(true);
+                        holder.likeButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getLikeCount()));
+                    }
+                });
+            }
+            else {
+                JsonNetworkRequest.sendDelete(context, "https://api.twitter.com/2/users/" + tweet.getAuthor().getId() + "/likes/" + tweet.getId(), response -> {
+                    if (response == null) {
+                        Toast.makeText(context, "Failed to unlike tweet", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        holder.likeButton.setChipIconResource(R.drawable.ic_like);
+                        tweet.getMetrics().decrementLikeCount();
+                        tweet.setLiked(false);
+                        holder.likeButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getLikeCount()));
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -172,56 +205,14 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         return tweets.size();
     }
 
-    public void addToBeginning(@NonNull JSONObject response) {
-        final JSONArray data = response.optJSONArray("data");
-
+    public void addToBeginning(@NonNull JSONArray data) {
         for (int i = data.length() - 1; i > -1; i--) {
-            final JSONObject tweet = data.optJSONObject(i);
-            final Tweet.Metrics metrics = new Tweet.Metrics(tweet.optJSONObject("public_metrics"));
-            final String authorId = tweet.optString("author_id");
-
-            // find the tweet author object in the "users" array inside the "includes" object, based on their id
-            final JSONObject includes = response.optJSONObject("includes");
-            final JSONArray users = includes.optJSONArray("users");
-
-            for (int j = 0; j < users.length(); j++) {
-                final JSONObject user = users.optJSONObject(j);
-                final String id = user.optString("id");
-
-                if (id.equals(authorId)) {
-                    final Tweet.Author author = new Tweet.Author(user);
-                    tweets.add(0, new Tweet(tweet, metrics, author, getMedia(response, tweet)));
-                    break;
-                }
-            }
-
-            notifyItemRangeInserted(0, data.length());
+            tweets.add(0, new Tweet(data.optJSONObject(i)));
         }
+        notifyItemRangeInserted(0, data.length());
     }
 
-    private ArrayList<Tweet.Media> getMedia(JSONObject response, JSONObject tweet) {
-        final ArrayList<Tweet.Media> media = new ArrayList<>();
-
-        if (tweet.has("attachments") && tweet.optJSONObject("attachments").has("media_keys")) {
-            final JSONArray mediaKeys = tweet.optJSONObject("attachments").optJSONArray("media_keys");
-            final JSONObject includes = response.optJSONObject("includes");
-            final JSONArray mediaItems = includes.optJSONArray("media");
-
-            for (int j = 0; j < mediaItems.length(); j++) {
-                final JSONObject mediaObject = mediaItems.optJSONObject(j);
-                final String mediaKey = mediaObject.optString("media_key");
-
-                for (int k = 0; k < mediaKeys.length(); k++) {
-                    final String mediaKeyFromTweet = mediaKeys.optString(k);
-
-                    if (mediaKey.equals(mediaKeyFromTweet)) {
-                        media.add(new Tweet.Media(mediaObject));
-                        break;
-                    }
-                }
-            }
-        }
-
-        return media;
+    public Tweet getItemAtIndex(int index) {
+        return tweets.get(index);
     }
 }

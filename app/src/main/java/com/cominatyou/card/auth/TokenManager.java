@@ -19,61 +19,25 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class TokenManager {
-    public static String get(Context context) {
+    public static String getToken(Context context) {
         try {
             final byte[] jsonBytes = Files.readAllBytes(new File(context.getFilesDir(), "auth.json").toPath());
             final JSONObject json = new JSONObject(new String(jsonBytes));
-            return json.getString("access_token");
+            return json.getString("token");
         }
         catch (Exception ignored) {
             return null;
         }
     }
 
-    public static void refresh(Context context) throws Exception {
-        final String refreshToken = getRefreshToken(context);
-
-        final OkHttpClient client = GlobalHttpClient.getInstance();
-        final String url = "https://api.twitter.com/2/oauth2/token";
-        final String urlParameters = "grant_type=refresh_token&refresh_token=" + refreshToken + "&client_id=" + Config.CLIENT_ID;
-
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                .post(RequestBody.create(urlParameters, MediaType.parse("application/x-www-form-urlencoded")))
-                .build();
-
-        okhttp3.Response response = client.newCall(request).execute();
-        final JSONObject respJson = new JSONObject(response.body().string());
-
-        if (!response.isSuccessful()) {
-            throw new Exception("Failed to refresh token: " + respJson);
-        }
-
-        final long expiresAt = Instant.now().getEpochSecond() + respJson.getInt("expires_in");
-        respJson.put("expires_at", expiresAt);
-        respJson.remove("expires_in");
-        respJson.remove("scope");
-        respJson.remove("token_type");
-
-        final File authData = new File(context.getFilesDir(), "auth.json");
-        Files.write(authData.toPath(), respJson.toString().getBytes());
-    }
-
-    public static boolean isExpired(Context context) {
+    public static String getTokenSecret(Context context) {
         try {
             final byte[] jsonBytes = Files.readAllBytes(new File(context.getFilesDir(), "auth.json").toPath());
             final JSONObject json = new JSONObject(new String(jsonBytes));
-            return Instant.now().getEpochSecond() > json.getLong("expires_at");
+            return json.getString("token_secret");
         }
         catch (Exception ignored) {
-            return true;
+            return null;
         }
-    }
-
-    private static String getRefreshToken(Context context) throws IOException, JSONException {
-        final byte[] jsonBytes = Files.readAllBytes(new File(context.getFilesDir(), "auth.json").toPath());
-        final JSONObject json = new JSONObject(new String(jsonBytes));
-        return json.getString("refresh_token");
     }
 }

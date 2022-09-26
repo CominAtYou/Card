@@ -64,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/gs_text_regular"
                     android:textSize="14sp"
-                    tools:text="\@Username · " />
+                    tools:text="\@Username • " />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -72,7 +72,7 @@
                     android:id="@+id/tweet_timestamp"
                     android:fontFamily="@font/gs_text_regular"
                     android:textSize="14sp"
-                    tools:text="1 minute ago" />
+                    tools:text="1m" />
 
             </LinearLayout>
 
@@ -101,12 +101,13 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/tweet_reply_chip"
                     style="@style/Widget.App.Chip"
+                    app:textEndPadding="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:chipIcon="@drawable/ic_comment_24"
                     app:chipIconTint="?android:textColorPrimary"
                     app:chipBackgroundColor="?attr/colorSurfaceVariant"
-                    tools:text="6.2K"/>
+                    android:text="@string/tweet_reply_chip_label"/>
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/tweet_retweet_chip"
@@ -127,7 +128,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:chipIcon="@drawable/ic_like"
-                    app:chipIconTint="?android:textColorPrimary"
                     app:chipBackgroundColor="?attr/colorSurfaceVariant"
                     tools:text="262K"/>
 

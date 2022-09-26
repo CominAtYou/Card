@@ -12,7 +12,7 @@
     app:contentPaddingLeft="16dp"
     app:contentPaddingRight="16dp"
     app:contentPaddingTop="16dp"
-    app:contentPaddingBottom="6dp"
+    app:contentPaddingBottom="12dp"
     android:id="@+id/text_only_tweet">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,6 +24,8 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:src="@drawable/ic_account_circle_placeholder_24"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CircularCrop" />
@@ -38,7 +40,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/tweet_author_avatar"
-            app:layout_constraintTop_toTopOf="@id/tweet_author_avatar">
+            app:layout_constraintTop_toTopOf="@+id/tweet_author_avatar">
 
             <TextView
                 android:id="@+id/tweet_author_name"
@@ -82,63 +84,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/ps_regular"
-            tools:text="Sample tweet with image."
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed rhoncus, metus sit amet mattis pretium, felis nibh pulvinar mi, sed fringilla ante nulla nec erat."
             android:textSize="17sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tweet_author_details" />
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:foreground="@drawable/image_view_ripple"
-            android:layout_marginTop="10dp"
-            android:id="@+id/tweet_media"
-            android:clickable="true"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.RoundedCorners"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tweet_text_content"/>
-
-        <com.google.android.material.chip.ChipGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/tweet_actions_chip_group"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="6dp"
-            app:layout_constraintTop_toBottomOf="@id/tweet_media">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/tweet_reply_chip"
-                style="@style/Widget.App.Chip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:textEndPadding="4dp"
-                app:chipIcon="@drawable/ic_comment_24"
-                app:chipIconTint="?android:textColorPrimary"
-                app:chipBackgroundColor="?attr/colorSurfaceVariant"
-                android:text="@string/tweet_reply_chip_label"/>
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/tweet_retweet_chip"
-                style="@style/Widget.App.Chip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:chipIcon="@drawable/ic_rotation_24"
-                app:chipBackgroundColor="?attr/colorSurfaceVariant"
-                tools:text="17.8K"/>
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/tweet_like_chip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.App.Chip"
-                app:chipIcon="@drawable/ic_like"
-                app:chipBackgroundColor="?attr/colorSurfaceVariant"
-                tools:text="262K"/>
-
-
-        </com.google.android.material.chip.ChipGroup>
+            app:layout_constraintTop_toBottomOf="@+id/tweet_author_details"
+            android:paddingBottom="2dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -30,13 +30,20 @@ android {
         viewBinding true
     }
     namespace 'com.cominatyou.card'
+
+    packagingOptions {
+        resources.excludes.add("META-INF/*")
+    }
 }
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0-rc01'
     implementation 'org.apache.commons:commons-text:1.9'
+    implementation 'oauth.signpost:signpost-core:2.1.1'
+    implementation 'oauth.signpost:signpost-commonshttp4:2.1.1'
     implementation 'org.json:json:20220320'
+    implementation 'se.akerfeldt:okhttp-signpost:1.1.0'
     implementation "com.squareup.okhttp3:okhttp:4.10.0"
     implementation "androidx.browser:browser:1.4.0"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'

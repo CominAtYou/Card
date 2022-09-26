@@ -39,7 +39,7 @@
 
                 <data
                     android:host="callback"
-                    android:scheme="com.cominatyou.card-auth" />
+                    android:scheme="com.cominatyou.card.auth" />
             </intent-filter>
         </activity>
 
