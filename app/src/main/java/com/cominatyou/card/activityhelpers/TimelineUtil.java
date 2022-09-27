@@ -1,26 +1,29 @@
 package com.cominatyou.card.activityhelpers;
 
-import android.content.Context;
-import android.widget.Toast;
+import android.graphics.Typeface;
+import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.cominatyou.card.JsonNetworkRequest;
+import com.cominatyou.card.MainActivity;
+import com.cominatyou.card.R;
 import com.cominatyou.card.TimelineFragment;
 import com.cominatyou.card.adapters.TimelineAdapter;
-import com.cominatyou.card.auth.TokenManager;
 import com.cominatyou.card.data.Tweet;
+import com.cominatyou.card.util.DataCache;
+import com.google.android.material.snackbar.Snackbar;
 
-import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
 public class TimelineUtil {
-    private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
 
     static {
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -42,8 +45,14 @@ public class TimelineUtil {
 
 
         JsonNetworkRequest.getArray(fragment.requireContext(), "https://api.twitter.com/1.1/statuses/home_timeline.json?count=200&include_entities=true&tweet_mode=extended", response -> {
+            if (!response.isPresent()) {
+                displayError(fragment, "Something happened while trying to get your timeline.");
+                return;
+            }
+
+            DataCache.set(fragment.requireContext(), "home_timeline.json", response.get().toString());
             fragment.binding.timelineRecyclerView.setLayoutManager(new LinearLayoutManager(fragment.requireContext()));
-            fragment.binding.timelineRecyclerView.setAdapter(new TimelineAdapter(response, fragment.getParentFragmentManager()));
+            fragment.binding.timelineRecyclerView.setAdapter(new TimelineAdapter(response.get(), fragment.getParentFragmentManager()));
             callback.run();
         });
     }
@@ -51,19 +60,19 @@ public class TimelineUtil {
     public static void refreshTimeline(TimelineFragment fragment) {
         final Tweet tweet = ((TimelineAdapter) fragment.binding.timelineRecyclerView.getAdapter()).getItemAtIndex(0);
         final String since_id = tweet.getId();
-        final String url =  "https://api.twitter.com/1.1/statuses/home_timeline.json?count=200&include_entities=true&tweet_mode=extended&since_id=" + since_id;
+        final String url = "https://api.twitter.com/1.1/statuses/home_timeline.json?count=200&include_entities=true&tweet_mode=extended&since_id=" + since_id;
 
         JsonNetworkRequest.getArray(fragment.requireContext(), url, response -> {
-            if (response == null) {
-                Toast.makeText(fragment.requireContext(), "Something happened while trying to get new Tweets.", Toast.LENGTH_SHORT).show();
+            if (!response.isPresent()) {
+                displayError(fragment, "Something happened while trying to get new Tweets.");
                 fragment.binding.fragmentTimelineSwipeRefreshLayout.setRefreshing(false);
                 return;
             }
 
-           if (response.length() == 0) {
-             fragment.binding.fragmentTimelineSwipeRefreshLayout.setRefreshing(false);
-             return;
-           }
+            if (response.get().length() == 0) {
+                fragment.binding.fragmentTimelineSwipeRefreshLayout.setRefreshing(false);
+                return;
+            }
 
             final String cachedTimelineString = DataCache.get(fragment.requireContext(), "home_timeline.json");
             if (cachedTimelineString != null) {
@@ -97,5 +106,14 @@ public class TimelineUtil {
             fragment.binding.fragmentTimelineSwipeRefreshLayout.setRefreshing(false);
             fragment.binding.timelineRecyclerView.scrollToPosition(0);
         });
+    }
+
+    private static void displayError(TimelineFragment fragment, String message) {
+        Snackbar snackbar = Snackbar.make(((MainActivity) fragment.requireActivity()).binding.mainActivityCoordinatorLayout, message, Snackbar.LENGTH_LONG);
+        TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        Typeface font = ResourcesCompat.getFont(fragment.requireContext(), R.font.gs_text_regular);
+        textView.setTypeface(font);
+
+        snackbar.show();
     }
 }

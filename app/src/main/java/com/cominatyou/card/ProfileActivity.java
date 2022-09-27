@@ -6,16 +6,13 @@ import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.WindowCompat;
 
-import com.cominatyou.card.auth.TokenManager;
 import com.cominatyou.card.databinding.ActivityProfileBinding;
-import com.cominatyou.card.util.GlobalHttpClient;
 import com.cominatyou.card.util.LinkUtil;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
@@ -24,10 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Locale;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class ProfileActivity extends AppCompatActivity {
     private ActivityProfileBinding binding;
@@ -46,8 +39,8 @@ public class ProfileActivity extends AppCompatActivity {
         final String requestUrl = (isId ? "https://api.twitter.com/2/users/" : "https://api.twitter.com/2/users/by/username/") + userId + params;
 
         JsonNetworkRequest.getObject(this, requestUrl, responseObject -> {
-            if (responseObject.has("errors")) {
-                final JSONObject error = responseObject.optJSONArray("errors").optJSONObject(0);
+            if (!responseObject.isPresent() || responseObject.get().has("errors")) {
+                final JSONObject error = responseObject.get().optJSONArray("errors").optJSONObject(0);
                 Snackbar snackbar = Snackbar.make(binding.getRoot(), ProfileActivityUtil.getProfileActivityError(this, error.optString("detail"), userId), Snackbar.LENGTH_INDEFINITE);
                 TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
                 Typeface font = ResourcesCompat.getFont(this, R.font.gs_text_regular);
@@ -57,7 +50,7 @@ public class ProfileActivity extends AppCompatActivity {
                 return;
             }
 
-            final JSONObject user = responseObject.optJSONObject("data");
+            final JSONObject user = responseObject.get().optJSONObject("data");
             final String savedUserId = getSharedPreferences("user_data", MODE_PRIVATE).getString("id", null);
             if (!user.has("location")) {
                 binding.profileLocationContainer.setVisibility(View.GONE);

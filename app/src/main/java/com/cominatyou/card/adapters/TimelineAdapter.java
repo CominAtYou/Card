@@ -27,7 +27,6 @@ import com.cominatyou.card.util.NumberUtil;
 import com.cominatyou.card.util.RelativeTimestamp;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -114,7 +113,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         }
 
         if (tweet.getUrls().size() > 0) {
-            holder.tweetText.setText(LinkUtil.addHyperlinks(tweet.getUrls(), unescapedContent));
+            final var content = LinkUtil.addHyperlinks(tweet.getUrls(), unescapedContent);
+            holder.tweetText.setText(content);
             holder.tweetText.setOnTouchListener(LinkOnTouchListener.getListener());
         }
         else {
@@ -155,8 +155,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         });
 
         holder.likeButton.setOnClickListener(l -> {
+            final String userId = context.getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("id", null);
             if (!tweet.isLiked()) {
-                final String userId = context.getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("id", null);
                 JSONObject body = new JSONObject();
                 try {
                     body.put("tweet_id", tweet.getId());
@@ -168,7 +168,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
                 }
 
                 JsonNetworkRequest.postObject(context, "https://api.twitter.com/2/users/" + userId + "/likes", body, response -> {
-                    if (response == null) {
+                    if (!response.isPresent()) {
                         Toast.makeText(context, "Failed to like tweet", Toast.LENGTH_SHORT).show();
                     }
                     else {
@@ -180,8 +180,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
                 });
             }
             else {
-                JsonNetworkRequest.sendDelete(context, "https://api.twitter.com/2/users/" + tweet.getAuthor().getId() + "/likes/" + tweet.getId(), response -> {
-                    if (response == null) {
+                JsonNetworkRequest.sendDelete(context, "https://api.twitter.com/2/users/" + userId + "/likes/" + tweet.getId(), response -> {
+                    if (!response.isPresent()) {
                         Toast.makeText(context, "Failed to unlike tweet", Toast.LENGTH_SHORT).show();
                     }
                     else {

@@ -82,7 +82,7 @@ public class ReplyBottomSheet extends BottomSheetDialogFragment {
                 tweetObject.put("reply", replyObject);
 
                 JsonNetworkRequest.postObject(getContext(), "https://api.twitter.com/2/tweets", tweetObject, response -> {
-                    if (response.has("errors")) {
+                    if (!response.isPresent() || response.get().has("errors")) {
                         Toast.makeText(getContext(), "Something happened while trying to send your reply.", Toast.LENGTH_SHORT).show();
                         return;
                     }
