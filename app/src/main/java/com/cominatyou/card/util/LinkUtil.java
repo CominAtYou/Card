@@ -29,7 +29,7 @@ public class LinkUtil {
     public static Spannable addHyperlinks(@NonNull ArrayList<Tweet.Url> urls, String description) {
         for (int i = 0; i < urls.size(); i++) {
             final Tweet.Url urlObject = urls.get(i);
-            // link as html
+            description = description.replace("\n", "<br>"); // since we're using html, replace newlines with <br> tags
             description = description.replace(urlObject.getUrl(), String.format(Locale.getDefault(), "<a href=\"%s\">%s</a>", urlObject.getUrl(), urlObject.getDisplayUrl()));
         }
 
