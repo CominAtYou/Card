@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 import com.cominatyou.card.JsonNetworkRequest;
 import com.cominatyou.card.R;
@@ -34,23 +35,28 @@ public class ReplyBottomSheet extends BottomSheetDialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final BottomSheetReplyBinding binding = BottomSheetReplyBinding.inflate(inflater);
 
-       Tweet tweet = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? getArguments().getSerializable("tweet", Tweet.class) : (Tweet) getArguments().getSerializable("tweet");
+        assert getArguments() != null;
+        Tweet tweet = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? getArguments().getSerializable("tweet", Tweet.class) : (Tweet) getArguments().getSerializable("tweet");
 
-       binding.replyingToTweet.tweetTextContent.setText(StringEscapeUtils.unescapeHtml4(tweet.getText()));
-       binding.replyingToTweet.tweetAuthorName.setText(tweet.getAuthor().getName());
-       binding.replyingToTweet.tweetAuthorHandle.setText("@" + tweet.getAuthor().getUsername() + " • ");
-       binding.replyingToTweet.tweetTimestamp.setText(RelativeTimestamp.get(tweet.getCreation()));
-       Picasso.get().load(tweet.getAuthor().getProfileImageUrl()).into(binding.replyingToTweet.tweetAuthorAvatar);
 
-       binding.replyEditText.setOnTouchListener((v, event) -> {
+        binding.replyingToTweet.tweetTextContent.setText(StringEscapeUtils.unescapeHtml4(tweet.getText()));
+        binding.replyingToTweet.tweetAuthorName.setText(tweet.getAuthor().getName());
+        binding.replyingToTweet.tweetAuthorHandle.setText("@" + tweet.getAuthor().getUsername() + " • ");
+        binding.replyingToTweet.tweetTimestamp.setText(RelativeTimestamp.get(tweet.getCreation()));
+        binding.replyingToTweet.getRoot().setClickable(false);
+        binding.replyingToTweet.tweetAuthorAvatar.setClickable(false);
+        binding.bottomSheetCancelButton.setOnClickListener(l -> dismiss());
+        Picasso.get().load(tweet.getAuthor().getProfileImageUrl()).into(binding.replyingToTweet.tweetAuthorAvatar);
+
+        binding.replyEditText.setOnTouchListener((v, event) -> {
            v.getParent().requestDisallowInterceptTouchEvent(true);
            if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
                v.getParent().requestDisallowInterceptTouchEvent(false);
            }
            return false;
-       });
+        });
 
-       binding.replyEditText.addTextChangedListener(new TextWatcher() {
+        binding.replyEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 binding.replyLayout.setError(null);
@@ -58,12 +64,9 @@ public class ReplyBottomSheet extends BottomSheetDialogFragment {
 
             public void afterTextChanged(Editable s) {}
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-       });
+        });
 
-        binding.replyingToTweet.getRoot().setClickable(false);
-        binding.replyingToTweet.tweetAuthorAvatar.setClickable(false);
 
-        binding.bottomSheetCancelButton.setOnClickListener(l -> dismiss());
         binding.bottomSheetReplyButton.setOnClickListener(l -> {
             if (binding.replyEditText.getText().toString().isEmpty()) {
                 binding.replyLayout.setError("Reply cannot be empty");
