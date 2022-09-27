@@ -96,4 +96,10 @@ public class ReplyBottomSheet extends BottomSheetDialogFragment {
 
         return binding.getRoot();
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.BottomSheetDialogThemeNoFloating);
+        super.onCreate(savedInstanceState);
+    }
 }

@@ -86,4 +86,9 @@
         <item name="android:layout_height">18dp</item>
         <item name="android:tint">?android:textColorSecondary</item>
     </style>
+
+    <style name="BottomSheetDialogThemeNoFloating" parent="ThemeOverlay.Material3.DayNight.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize|stateVisible</item>
+    </style>
 </resources>

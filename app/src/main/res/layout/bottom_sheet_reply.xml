@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="12dp"
     android:paddingHorizontal="18dp">
 
     <include
@@ -52,18 +53,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:fontFamily="@font/ps_regular"
-            android:paddingHorizontal="8dp"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:minWidth="0dp"
+            style="?attr/materialButtonOutlinedStyle"
             android:id="@+id/bottom_sheet_cancel_button"
-            android:text="Cancel"/>
+            android:text="@string/bottom_sheet_reply_cancel_button_label"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:fontFamily="@font/ps_regular"
-            android:text="Reply"
+            android:text="@string/bottom_sheet_reply_reply_button_label"
             android:id="@+id/bottom_sheet_reply_button"
             style="@style/Widget.Material3.Button"
             app:layout_constraintEnd_toEndOf="parent"
