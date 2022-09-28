@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingBottom="12dp"
     android:paddingHorizontal="18dp">
 
     <include
@@ -30,13 +29,17 @@
         app:layout_constraintTop_toBottomOf="@id/replying_to_tweet">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/reply_edit_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="6"
+            android:fontFamily="@font/gs_text_regular"
             android:inputType="textCapSentences|textAutoCorrect|textMultiLine"
-            android:id="@+id/reply_edit_text"
             android:maxLength="280"
-            android:fontFamily="@font/gs_text_regular"/>
+            android:maxLines="6">
+
+        </com.google.android.material.textfield.TextInputEditText>
 
     </com.google.android.material.textfield.TextInputLayout>
 
