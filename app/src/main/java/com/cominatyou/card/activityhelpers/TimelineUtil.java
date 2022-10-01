@@ -37,7 +37,7 @@ public class TimelineUtil {
             try {
                 JSONArray cachedTimelineArray = new JSONArray(cachedTimeline);
                 fragment.binding.timelineRecyclerView.setAdapter(new TimelineAdapter(cachedTimelineArray, fragment.getParentFragmentManager()));
-                fragment.requireActivity().runOnUiThread(callback);
+                callback.run();
                 return;
             } catch (Exception e) {
                 e.printStackTrace();
