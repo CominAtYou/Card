@@ -12,7 +12,7 @@
     app:contentPaddingLeft="16dp"
     app:contentPaddingRight="16dp"
     app:contentPaddingTop="16dp"
-    app:contentPaddingBottom="12dp"
+    app:contentPaddingBottom="8dp"
     android:id="@+id/text_only_tweet">
 
     <androidx.constraintlayout.widget.ConstraintLayout
