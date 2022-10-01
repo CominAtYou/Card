@@ -1,10 +1,8 @@
 package com.cominatyou.card.adapters;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -195,14 +193,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
                 });
             }
         });
-
-        // might want to think up of a *better* way to do this.
-        holder.itemView.getContext().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                holder.timestamp.setText(RelativeTimestamp.get(tweet.getCreation()));
-            }
-        }, new IntentFilter(Intent.ACTION_TIME_TICK));
     }
 
     @Override
