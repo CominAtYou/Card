@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -32,6 +33,8 @@ public class TimelineFragment extends Fragment {
         binding.fragmentTimelineSwipeRefreshLayout.setColorSchemeColors(requireActivity().getColor(R.color.md_theme_light_primary));
 
         TimelineUtil.getTimeline(this, () -> {
+            // hide the loading bar when the RecyclerView is done loading
+            binding.timelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
             ((BottomNavigationView) requireActivity().findViewById(R.id.bottom_navigation)).setOnItemReselectedListener(this::recyclerViewScrollToTop);
             binding.fragmentTimelineSwipeRefreshLayout.setOnRefreshListener(() -> TimelineUtil.refreshTimeline(this));
         });
@@ -71,4 +74,12 @@ public class TimelineFragment extends Fragment {
             binding.timelineFragmentAppBarLayout.setExpanded(true);
         }
     }
+
+    final ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            ((MainActivity) getActivity()).binding.mainActivityHorizontalProgressBar.setVisibility(View.GONE);
+            binding.timelineRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        }
+    };
 }

@@ -1,6 +1,7 @@
 package com.cominatyou.card.activityhelpers;
 
 import android.graphics.Typeface;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
@@ -40,6 +41,7 @@ public class TimelineUtil {
                 callback.run();
                 return;
             } catch (Exception e) {
+                ((MainActivity) fragment.getActivity()).binding.mainActivityHorizontalProgressBar.setVisibility(View.GONE);
                 e.printStackTrace();
             }
         }
@@ -48,6 +50,7 @@ public class TimelineUtil {
         JsonNetworkRequest.getArray(fragment.requireContext(), "https://api.twitter.com/1.1/statuses/home_timeline.json?count=200&include_entities=true&tweet_mode=extended", response -> {
             if (!response.isPresent()) {
                 displayError(fragment, "Something happened while trying to get your timeline.");
+                ((MainActivity) fragment.getActivity()).binding.mainActivityHorizontalProgressBar.setVisibility(View.GONE);
                 return;
             }
 
