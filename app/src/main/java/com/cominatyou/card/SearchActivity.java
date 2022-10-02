@@ -61,4 +61,10 @@ public class SearchActivity extends AppCompatActivity {
 
         binding.activitySearchGoToProfileCard.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class).putExtra("user_id", binding.searchField.getText().toString().trim())));
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAfterTransition();
+    }
 }
