@@ -107,6 +107,21 @@ public class ProfileActivity extends AppCompatActivity {
             binding.profileCard.setVisibility(View.VISIBLE);
         });
 
+        final String parameters = isId ? "?user_id=" + userId : "?screen_name=" + userId;
+        JsonNetworkRequest.getArray(this, "https://api.twitter.com/1.1/friendships/lookup.json" + parameters, response -> {
+            if (!response.isPresent()) {
+                return;
+            }
+
+            final JSONArray connections = response.get().optJSONObject(0).optJSONArray("connections");
+            for (int i = 0; i < connections.length(); i++) {
+                if (connections.optString(i).equals("following")) {
+                    binding.profileFollowButton.setText(getString(R.string.activity_profile_following_label));
+                    break;
+                }
+            }
+        });
+
         binding.activityProfileToolbar.setNavigationOnClickListener(v -> finish());
     }
 }

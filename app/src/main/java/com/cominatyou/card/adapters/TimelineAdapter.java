@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.cominatyou.card.ProfileActivity;
 import com.cominatyou.card.R;
 import com.cominatyou.card.activityhelpers.ReplyBottomSheet;
 import com.cominatyou.card.data.Tweet;
+import com.cominatyou.card.util.DataCache;
 import com.cominatyou.card.util.LinkOnTouchListener;
 import com.cominatyou.card.util.LinkUtil;
 import com.cominatyou.card.util.NumberUtil;
@@ -34,7 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +58,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         private final TextView authorName;
         private final TextView authorUsername;
         private final TextView timestamp;
+        private final LinearLayout tweetAction;
+        private final TextView actionLabel;
         private final Chip retweetButton;
         private final Chip replyButton;
         private final Chip likeButton;
@@ -69,6 +72,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
             authorName = itemView.findViewById(R.id.tweet_author_name);
             authorUsername = itemView.findViewById(R.id.tweet_author_handle);
             timestamp = itemView.findViewById(R.id.tweet_timestamp);
+            tweetAction = itemView.findViewById(R.id.tweet_action);
+            actionLabel = itemView.findViewById(R.id.tweet_action_label);
             retweetButton = itemView.findViewById(R.id.tweet_retweet_chip);
             replyButton = itemView.findViewById(R.id.tweet_reply_chip);
             likeButton = itemView.findViewById(R.id.tweet_like_chip);
@@ -123,16 +128,27 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
         Picasso.get().load(tweet.getAuthor().getProfileImageUrl().replace("normal", "400x400")).into(holder.profileImage);
         holder.authorName.setText(tweet.getAuthor().getName());
-
-        // format the creation date as either "1s", "1m", "1h", or "1d"
-        Instant creationDate = tweet.getCreation();
-
         holder.authorUsername.setText("@" + tweet.getAuthor().getUsername() + " • ");
-        holder.timestamp.setText(RelativeTimestamp.get(creationDate));
-//        holder.replyButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getReplyCount()));
+        holder.timestamp.setText(RelativeTimestamp.get(tweet.getCreation()));
         holder.retweetButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getRetweetCount() + tweet.getMetrics().getQuoteCount()));
         holder.likeButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getLikeCount()));
         holder.itemView.setTag(tweet);
+
+        if (tweet.getRetweeter() != null) {
+            holder.tweetAction.setVisibility(View.VISIBLE);
+            holder.actionLabel.setText(holder.itemView.getContext().getString(R.string.tweet_retweeted_by_label, tweet.getRetweeter().getName()));
+
+            holder.tweetAction.setOnClickListener(l -> {
+                final Context context = holder.itemView.getContext();
+                final Intent intent = new Intent(context, ProfileActivity.class);
+                intent.putExtra("user_id", tweet.getRetweeter().getId());
+                intent.putExtra("is_id", true);
+                context.startActivity(intent);
+            });
+        }
+        else {
+            holder.tweetAction.setVisibility(View.GONE);
+        }
 
         holder.likeButton.setChipIconResource(tweet.isLiked() ? R.drawable.ic_like_filled : R.drawable.ic_like);
 
@@ -191,6 +207,26 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
                         holder.likeButton.setText(NumberUtil.formatNumber(tweet.getMetrics().getLikeCount()));
                     }
                 });
+            }
+
+            // update the cached tweet in the cached timeline
+            final String timelineCache = DataCache.get(context, "home_timeline.json");
+
+            try {
+                JSONArray cachedTimeline = new JSONArray(timelineCache);
+                for (int i = 0; i < cachedTimeline.length(); i++) {
+                    JSONObject cachedTweet = cachedTimeline.getJSONObject(i);
+                    if (cachedTweet.getString("id_str").equals(tweet.getId())) {
+                        cachedTweet.put("favorited", tweet.isLiked());
+                        cachedTweet.getJSONObject("metrics").put("favorite_count", tweet.getMetrics().getLikeCount());
+                        break;
+                    }
+                }
+
+                DataCache.set(context, "home_timeline.json", cachedTimeline.toString());
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
             }
         });
     }

@@ -89,6 +89,36 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tweet_author_details" />
 
+        <LinearLayout
+            android:layout_marginTop="8dp"
+            android:id="@+id/tweet_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ps_regular"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tweet_text_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="19dp"
+                android:layout_height="19dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_rotation_24"
+                android:id="@+id/tweet_action_icon"
+                app:tint="?android:textColorSecondary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/gs_text_regular"
+                tools:text="Retweeted by Comin"
+                android:id="@+id/tweet_action_label"
+                android:layout_marginStart="8dp"/>
+
+        </LinearLayout>
+
 
             <com.google.android.material.chip.ChipGroup
                 android:layout_marginTop="4dp"
@@ -96,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tweet_actions_chip_group"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tweet_text_content">
+                app:layout_constraintTop_toBottomOf="@id/tweet_action">
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/tweet_reply_chip"

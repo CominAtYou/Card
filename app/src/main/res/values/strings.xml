@@ -24,4 +24,5 @@
     <string name="bottom_sheet_reply_edit_text_hint">Reply</string>
     <string name="bottom_sheet_reply_cancel_button_label">Cancel</string>
     <string name="bottom_sheet_reply_reply_button_label">Reply</string>
+    <string name="tweet_retweeted_by_label">Retweeted by %1$s</string>
 </resources>

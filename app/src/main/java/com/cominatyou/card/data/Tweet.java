@@ -18,6 +18,7 @@ public class Tweet implements Serializable {
     private final Metrics metrics;
     private final String text;
     private final Author author;
+    private final Author retweeter;
     private boolean retweeted;
     private boolean liked;
     private final ArrayList<Url> urls = new ArrayList<>();
@@ -25,6 +26,16 @@ public class Tweet implements Serializable {
 
     public Tweet(JSONObject tweet) {
         this.id = tweet.optString("id_str");
+        Author retweeterTmp = null;
+
+        if (tweet.has("retweeted_status")) {
+            final JSONObject retweetedStatus = tweet.optJSONObject("retweeted_status");
+            final JSONObject retweetedBy = tweet.optJSONObject("user");
+            retweeterTmp = new Author(retweetedBy.optString("id_str"), retweetedBy.optString("name"), retweetedBy.optString("screen_name"), retweetedBy.optString("profile_image_url_https"));
+            tweet = retweetedStatus;
+        }
+
+        this.retweeter = retweeterTmp;
         DateFormat df = new SimpleDateFormat("EEE MMM dd hh:mm:ss +0000 yyyy", Locale.US);
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -106,6 +117,10 @@ public class Tweet implements Serializable {
 
     public Author getAuthor() {
         return author;
+    }
+
+    public Author getRetweeter() {
+        return retweeter;
     }
 
     public ArrayList<Url> getUrls() {
