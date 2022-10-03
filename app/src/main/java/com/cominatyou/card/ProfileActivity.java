@@ -11,9 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.WindowCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.cominatyou.card.adapters.TimelineAdapter;
 import com.cominatyou.card.databinding.ActivityProfileBinding;
 import com.cominatyou.card.util.LinkUtil;
+import com.google.android.material.color.DynamicColors;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
@@ -28,6 +31,7 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DynamicColors.applyToActivityIfAvailable(this);
         binding = ActivityProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
@@ -102,26 +106,43 @@ public class ProfileActivity extends AppCompatActivity {
             binding.profileUsername.setText("@" + user.optString("username"));
             binding.followerCount.setText(String.format(Locale.getDefault(), "%,d", user.optJSONObject("public_metrics").optInt("followers_count")));
             binding.followingCount.setText(String.format(Locale.getDefault(), "%,d", user.optJSONObject("public_metrics").optInt("following_count")));
-
-            binding.activityProfileProgressbar.setVisibility(View.GONE);
             binding.profileCard.setVisibility(View.VISIBLE);
-        });
 
-        final String parameters = isId ? "?user_id=" + userId : "?screen_name=" + userId;
-        JsonNetworkRequest.getArray(this, "https://api.twitter.com/1.1/friendships/lookup.json" + parameters, response -> {
-            if (!response.isPresent()) {
-                return;
-            }
 
-            final JSONArray connections = response.get().optJSONObject(0).optJSONArray("connections");
-            for (int i = 0; i < connections.length(); i++) {
-                if (connections.optString(i).equals("following")) {
-                    binding.profileFollowButton.setText(getString(R.string.activity_profile_following_label));
-                    break;
+            final String id = user.optString("id");
+            JsonNetworkRequest.getArray(this, "https://api.twitter.com/1.1/friendships/lookup.json?user_id=" + id, response -> {
+                if (!response.isPresent()) {
+                    return;
                 }
-            }
+
+                final JSONArray connections = response.get().optJSONObject(0).optJSONArray("connections");
+                for (int i = 0; i < connections.length(); i++) {
+                    if (connections.optString(i).equals("following")) {
+                        binding.profileFollowButton.setText(getString(R.string.activity_profile_following_label));
+                        break;
+                    }
+                }
+
+                JsonNetworkRequest.getArray(this, "https://api.twitter.com/1.1/statuses/user_timeline.json?tweet_mode=extended&count=100&include_rts=true&exclude_replies=true&user_id=" + id, timelineRes -> {
+                    if (!timelineRes.isPresent()) {
+                        return;
+                    }
+
+                    final JSONArray timeline = timelineRes.get();
+                    binding.profileTimeline.setLayoutManager(new LinearLayoutManager(this));
+                    binding.profileTimeline.setAdapter(new TimelineAdapter(timeline, getSupportFragmentManager()));
+                    binding.activityProfileProgressbar.setVisibility(View.GONE);
+                });
+            });
+
+            binding.activityProfileToolbar.setNavigationOnClickListener(v -> finish());
         });
 
-        binding.activityProfileToolbar.setNavigationOnClickListener(v -> finish());
+
+        binding.appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+            float range = (float) -appBarLayout.getTotalScrollRange();
+            binding.profileAvatar.setImageAlpha((int) (255 * (1f - (float) verticalOffset / range)));
+            binding.profileUsername.setAlpha(1f - (float) verticalOffset / range);
+        });
     }
 }

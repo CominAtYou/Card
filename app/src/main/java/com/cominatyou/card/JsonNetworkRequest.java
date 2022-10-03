@@ -45,7 +45,8 @@ public class JsonNetworkRequest {
 
             try {
                 Response response = client.newCall(request).execute();
-                JSONArray array = new JSONArray(response.body().string());
+                final String body = response.body().string();
+                JSONArray array = new JSONArray(body);
                 new Handler(context.getMainLooper()).post(() -> callback.accept(Optional.of(array)));
             }
             catch (IOException | JSONException e) {
