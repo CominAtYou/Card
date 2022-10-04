@@ -130,7 +130,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     final JSONArray timeline = timelineRes.get();
                     binding.profileTimeline.setLayoutManager(new LinearLayoutManager(this));
-                    binding.profileTimeline.setAdapter(new TimelineAdapter(timeline, getSupportFragmentManager()));
+                    binding.profileTimeline.setAdapter(new TimelineAdapter(timeline));
                     binding.activityProfileProgressbar.setVisibility(View.GONE);
                 });
             });

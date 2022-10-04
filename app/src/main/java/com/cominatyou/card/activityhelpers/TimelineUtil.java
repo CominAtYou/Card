@@ -37,7 +37,7 @@ public class TimelineUtil {
 
             try {
                 JSONArray cachedTimelineArray = new JSONArray(cachedTimeline);
-                fragment.binding.timelineRecyclerView.setAdapter(new TimelineAdapter(cachedTimelineArray, fragment.getParentFragmentManager()));
+                fragment.binding.timelineRecyclerView.setAdapter(new TimelineAdapter(cachedTimelineArray));
                 callback.run();
                 return;
             } catch (Exception e) {
@@ -56,7 +56,7 @@ public class TimelineUtil {
 
             DataCache.set(fragment.requireContext(), "home_timeline.json", response.get().toString());
             fragment.binding.timelineRecyclerView.setLayoutManager(new LinearLayoutManager(fragment.requireContext()));
-            fragment.binding.timelineRecyclerView.setAdapter(new TimelineAdapter(response.get(), fragment.getParentFragmentManager()));
+            fragment.binding.timelineRecyclerView.setAdapter(new TimelineAdapter(response.get()));
             callback.run();
         });
     }

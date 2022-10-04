@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,15 +42,12 @@ import java.util.List;
 
 public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TimelineTweetHolder> {
     private final List<Tweet> tweets = new ArrayList<>();
-    private final FragmentManager fragmentManager;
 
-    public TimelineAdapter(JSONArray response, FragmentManager fragmentManager) {
+    public TimelineAdapter(JSONArray response) {
         for (int i = 0; i < response.length(); i++) {
             final JSONObject tweet = response.optJSONObject(i);
             tweets.add(new Tweet(tweet));
         }
-
-        this.fragmentManager = fragmentManager;
     }
 
     public static class TimelineTweetHolder extends RecyclerView.ViewHolder {
@@ -167,7 +165,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
             bundle.putSerializable("tweet", tweet);
             replyBottomSheet.setArguments(bundle);
 
-            replyBottomSheet.show(fragmentManager, ReplyBottomSheet.TAG);
+            replyBottomSheet.show(((AppCompatActivity) holder.itemView.getContext()).getSupportFragmentManager(), ReplyBottomSheet.TAG);
         });
 
         holder.likeButton.setOnClickListener(l -> {
