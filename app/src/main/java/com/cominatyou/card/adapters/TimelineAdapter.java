@@ -216,7 +216,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
                     JSONObject cachedTweet = cachedTimeline.getJSONObject(i);
                     if (cachedTweet.getString("id_str").equals(tweet.getId())) {
                         cachedTweet.put("favorited", tweet.isLiked());
-                        cachedTweet.getJSONObject("metrics").put("favorite_count", tweet.getMetrics().getLikeCount());
+                        cachedTweet.put("favorite_count", tweet.getMetrics().getLikeCount());
                         break;
                     }
                 }
