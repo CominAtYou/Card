@@ -1,0 +1,175 @@
+<com.google.android.material.card.MaterialCardView android:layout_marginBottom="2dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    android:id="@+id/profile_card"
+    style="?attr/materialCardViewFilledStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="8dp"
+    app:contentPaddingBottom="8dp"
+    app:contentPaddingRight="16dp"
+    app:contentPaddingTop="16dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/profile_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/gs_text_regular"
+            android:paddingEnd="0dp"
+            android:paddingStart="16dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Sample bio. I can't remember &quot;lorem ipsum sit dolor amet&quot; past like the first few words, so this will have to suffice." />
+
+        <!-- 12dp to account for icon default padding -->
+        <LinearLayout
+            android:id="@+id/profile_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="0dp"
+            android:paddingStart="12dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/profile_description">
+
+            <LinearLayout
+                android:id="@+id/profile_location_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/profile_location_icon"
+                    style="@style/Theme.Card.ProfileDetailItemIcon"
+                    android:importantForAccessibility="no"
+                    android:layout_width="18dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_location_24" />
+
+                <TextView
+                    android:id="@+id/profile_location_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/gs_text_regular"
+                    android:maxWidth="165dp"
+                    android:maxLines="1"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="10dp"
+                    tools:text="Kansas City, MO" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/profile_url_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/profile_link_icon"
+                    android:importantForAccessibility="no"
+                    style="@style/Theme.Card.ProfileDetailItemIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_link_24" />
+
+                <TextView
+                    android:id="@+id/profile_url_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:clickable="true"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/gs_text_regular"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:maxLines="1"
+                    android:textColor="?attr/colorPrimary"
+                    tools:ignore="TouchTargetSizeCheck"
+                    tools:text="example.com" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/profile_follow_details_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingBottom="8dp"
+            android:paddingEnd="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/profile_details">
+
+            <TextView
+                android:id="@+id/following_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ps_regular"
+                tools:text="217"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/following_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/ps_regular"
+                android:text="@string/activity_profile_following_label" />
+
+            <TextView
+                android:id="@+id/follower_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/ps_regular"
+                tools:text="61.2K"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/followers_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/ps_regular"
+                android:text="@string/activity_profile_followers_label" />
+
+        </LinearLayout>
+
+        <com.google.android.material.chip.ChipGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:layout_marginStart="14dp"
+            android:id="@+id/profile_buttons_container"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/profile_follow_details_container">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/profile_follow_button"
+                style="@style/Widget.App.Chip"
+                android:layout_width="wrap_content"
+                app:chipMinTouchTargetSize="40dp"
+                android:layout_height="wrap_content"
+                app:chipBackgroundColor="?attr/colorSurfaceVariant"
+                app:chipIcon="@drawable/ic_follow_24"
+                app:chipIconTint="?android:textColorPrimary"
+                android:text="@string/activity_profile_follow_button_label" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
