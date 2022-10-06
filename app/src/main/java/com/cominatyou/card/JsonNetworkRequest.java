@@ -35,7 +35,7 @@ public class JsonNetworkRequest {
                 e.printStackTrace();
                 callback.accept(Optional.empty());
             }
-        }).start();
+        }, "JSON Object HTTP Request").start();
     }
 
     public static void getArray(Context context, String url, Consumer<Optional<JSONArray>> callback) {
@@ -53,7 +53,7 @@ public class JsonNetworkRequest {
                 e.printStackTrace();
                 new Handler(context.getMainLooper()).post(() -> callback.accept(Optional.empty()));
             }
-        }).start();
+        }, "JSON Array HTTP Request").start();
     }
 
     public static void postObject(Context context, String url, JSONObject object, Consumer<Optional<JSONObject>> callback) {
@@ -71,7 +71,7 @@ public class JsonNetworkRequest {
                 e.printStackTrace();
                 new Handler(context.getMainLooper()).post(() -> callback.accept(Optional.empty()));
             }
-        }).start();
+        }, "JSON Object HTTP POST Request").start();
     }
 
     public static void sendDelete(Context context, String url, Consumer<Optional<JSONObject>> callback) {
@@ -88,6 +88,6 @@ public class JsonNetworkRequest {
                 e.printStackTrace();
                 new Handler(context.getMainLooper()).post(() -> callback.accept(Optional.empty()));
             }
-        }).start();
+        }, "HTTP Delete Request").start();
     }
 }
